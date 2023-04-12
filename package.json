@@ -6,9 +6,15 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "predeploy": "npm run generate",
+    "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
     "nuxt": "^3.3.3"
+  },
+  "dependencies": {
+    "gh-pages": "^5.0.0",
+    "vue3-google-map": "^0.15.0"
   }
 }
