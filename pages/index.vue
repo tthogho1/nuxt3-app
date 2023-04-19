@@ -1,6 +1,6 @@
 <template>
     <GoogleMap  ref="mapRef" api-key="AIzaSyAYemHqW9xU48b7KhMXauA6P0fDFTWyly0" style="width: 100%; height: 500px" :center="center" :zoom="15">
-      <Marker :options="{ position: center }" />
+      <Marker :options="markerOptions" />
     </GoogleMap>
   </template>
     
@@ -10,7 +10,15 @@ import { ref } from "vue";
 
 const mapRef = ref(null);
 const center = ref({ lat: 0, lng: 0 }); // first position
-const getLocation = function(map:any,center:any){
+const markerOptions = ref({ position: center});
+//
+// getLocation is called when the map is ready
+//
+const getLocation = function(map:any,center:any,markerOptions:any){
+    const markerIcon = {
+        url:'/images/man.png',
+        scaledSize: new mapRef.value.api.Size(30, 30)
+    }
     navigator.geolocation.getCurrentPosition(
             // success callback
             function(position) {
@@ -19,6 +27,7 @@ const getLocation = function(map:any,center:any){
                 console.log(`Latitude: ${lat}, Longitude: ${lng}`);
                 map.panTo({ lat, lng });
                 center.value = { lat: lat, lng: lng };
+                markerOptions.value = { position: center, icon: markerIcon };
             },
             // error callback
             function(error) {
@@ -30,6 +39,6 @@ const getLocation = function(map:any,center:any){
 watch(() => mapRef.value?.ready, (ready) => {
     if (!ready) return;
     const map = mapRef.value.map;
-    getLocation(map,center);
+    getLocation(map,center,markerOptions);
 })
 </script>
