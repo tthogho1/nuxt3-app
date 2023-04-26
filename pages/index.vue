@@ -2,9 +2,9 @@
     <GoogleMap  ref="mapRef" api-key="AIzaSyAYemHqW9xU48b7KhMXauA6P0fDFTWyly0" style="width: 100%; height: 500px" :center="center" :zoom="15">
       <Marker :options="markerOptions" />
       <MarkerCluster>
-        <Marker v-for="(location, i) in locations" :options="{ position: location }" :key="i">
+        <Marker v-for="(webCam, i) in webCams" :options="{ position: {lat:webCam.location.latitude,lng:webCam.location.longitude} }" :key="i">
             <InfoWindow>
-                <div>{{ location.lat }}</div>
+                <div>{{ webCam.location.latitude }}</div>
             </InfoWindow>
         </Marker>
       </MarkerCluster>
@@ -23,8 +23,29 @@ onMounted(() => {
     getAuthenticate();
 });
 
+type location = {
+    latitude: number;
+    longitude: number;
+  }
+
+type webCam={
+    id:string;
+    status: string;
+    title:  string;
+    location : location;
+}
+
+
+const webCams = ref<Array<webCam>>([]);    
+
+/*
+const webCams : webCam[] = [{id:1,status:"a",title:"test",location:{latitude:35.0,longitude:133}},
+{id:2,status:"b",title:"test2",location:{latitude:36.0,longitude:140.0}}
+];
+*/
+
 //
-var authToken = '';
+const authToken = ref('');
 const getAuthenticate = function () {
 
 	fetch('https://realm.mongodb.com/api/client/v2.0/app/webcamql-mxkqo/auth/providers/api-key/login', {
@@ -38,13 +59,12 @@ const getAuthenticate = function () {
 	})
 	.then(response => response.json())
 	.then(data =>{
-		authToken = data.access_token; 
+		authToken.value = data.access_token; 
 		// console.log(`authToken: ${authToken}`);
 	}).catch(error => console.error(error));
 };
 
 
-const webCams = ref( [{}]);
 const getWebCamList = function(map:any){
     const latlngBound = map.getBounds();
     const latlngNE = latlngBound.getNorthEast();
@@ -55,7 +75,7 @@ const getWebCamList = function(map:any){
     const longitude_gte = latlngSW.lng();
     const longitude_lt = latlngNE.lng();
 
-    const token = 'Bearer ' + authToken ;
+    const token = 'Bearer ' + authToken.value ;
 
 	const queryMsg = `query {
   		webcams(query:{location:{longitude_lt:${longitude_lt},
@@ -86,8 +106,12 @@ const getWebCamList = function(map:any){
 	})
 	.then(response => response.json())
 	.then(data =>{
-        webCams.value = data.data.webcams;
-		console.log(data);
+        //webCams = data.data.webcams;
+        webCams.value = Array.from(data.data.webcams);
+		console.log(webCams);
+        webCams.value.forEach((webCam:webCam) => {
+            console.log(webCam.location.latitude);
+        });
 	})
 	.catch(error => console.error(error));
 
@@ -110,7 +134,6 @@ const getLocation = function(map:any,center:any,markerOptions:any){
                 map.panTo({ lat, lng });
                 center.value = { lat: lat, lng: lng };
                 markerOptions.value = { position: center, icon: markerIcon };
-                //locations.value = [{ lat: lat, lng: lng }];
             },
             // error callback
             function(error) {
