@@ -4,7 +4,7 @@
       <MarkerCluster>
         <Marker v-for="(webCam, i) in webCams" :options="{ position: {lat:webCam.location.latitude,lng:webCam.location.longitude} }" :key="i">
             <InfoWindow>
-                <div>{{ webCam.location.latitude }}</div>
+                <div><a v-bind:href="webCam.player.day.link" target="_blank">{{ webCam.title }}</a></div>
             </InfoWindow>
         </Marker>
       </MarkerCluster>
@@ -14,40 +14,27 @@
 <script setup lang="ts">
 import { GoogleMap, InfoWindow, Marker ,MarkerCluster} from "vue3-google-map";
 import { ref } from "vue";
-
 const mapRef = ref(null);
 const center = ref({ lat: 0, lng: 0 }); // first position
 const markerOptions = ref({ position: center});
-
 onMounted(() => {
     getAuthenticate();
 });
-
 type location = {
     latitude: number;
     longitude: number;
   }
-
 type webCam={
     id:string;
     status: string;
     title:  string;
     location : location;
 }
-
-
 const webCams = ref<Array<webCam>>([]);    
-
-/*
-const webCams : webCam[] = [{id:1,status:"a",title:"test",location:{latitude:35.0,longitude:133}},
-{id:2,status:"b",title:"test2",location:{latitude:36.0,longitude:140.0}}
-];
-*/
 
 //
 const authToken = ref('');
 const getAuthenticate = function () {
-
 	fetch('https://realm.mongodb.com/api/client/v2.0/app/webcamql-mxkqo/auth/providers/api-key/login', {
   		method: 'POST',
   		headers: {
@@ -63,8 +50,6 @@ const getAuthenticate = function () {
 		// console.log(`authToken: ${authToken}`);
 	}).catch(error => console.error(error));
 };
-
-
 const getWebCamList = function(map:any){
     const latlngBound = map.getBounds();
     const latlngNE = latlngBound.getNorthEast();
@@ -74,23 +59,26 @@ const getWebCamList = function(map:any){
     const latitude_lt = latlngNE.lat();
     const longitude_gte = latlngSW.lng();
     const longitude_lt = latlngNE.lng();
-
     const token = 'Bearer ' + authToken.value ;
-
 	const queryMsg = `query {
-  		webcams(query:{location:{longitude_lt:${longitude_lt},
+  		webcams(query:{status:"active",location:{longitude_lt:${longitude_lt},
                         longitude_gte:${longitude_gte},
                         latitude_lt:${latitude_lt},
                         latitude_gte:${latitude_gte}}}
-    	,limit:5
+    	,limit:300
     	,sortBy:ID_ASC) {
 			id
-			status
 			title
     		location{
      		 	latitude
       			longitude
     		}
+            player{
+               day{
+                 available
+                 link
+              }
+           }
   		}
 	}`;
  
@@ -114,9 +102,7 @@ const getWebCamList = function(map:any){
         });
 	})
 	.catch(error => console.error(error));
-
 };
-
 //
 // getLocation is called when the map is ready
 //
@@ -141,13 +127,10 @@ const getLocation = function(map:any,center:any,markerOptions:any){
             }
     );
 } 
-
-
 watch(() => mapRef.value?.ready, (ready) => {
     if (!ready) return;
     const map = mapRef.value.map;
     getLocation(map,center,markerOptions);
-
     map.addListener("idle", (e:any) => {
         setTimeout(function(){getWebCamList(map)},1000);
     });
