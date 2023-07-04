@@ -21,92 +21,60 @@
 <script setup lang="ts">
 import { GoogleMap, InfoWindow, Marker ,MarkerCluster} from "vue3-google-map";
 import { ref } from "vue";
-import { webCamObj } from "./def/webCam"
+import { webCamObj , Bound } from "./def/webCam"
+
+
+const myWorker = new Worker(new URL('./worker.js', import.meta.url));
+
+const setGoogleMapPointer = function(gmap:HTMLElement|null,status : string){
+    if (gmap != null && gmap != undefined){
+            gmap.style.pointerEvents =status;
+    }
+}
+
+myWorker.addEventListener('message', (e) => {
+  console.log('Workerから受け取ったデータは: ', e.data);
+}, false);
+
+myWorker.postMessage('Hello, world');
+
+console.log("Message posted to worker");
 
 const mapRef = ref(null);
 const center = ref({ lat: 0, lng: 0 }); // first position
 const markerOptions = ref({ position: center})
 
-onMounted(() => {
-    getAuthenticate();
-});
-
 const webCams = ref<Array<webCamObj>>([]);    
 const authToken = ref('');
-const getAuthenticate = function () {
-	fetch('https://realm.mongodb.com/api/client/v2.0/app/webcamql-qrkjj/auth/providers/api-key/login', {
-  		method: 'POST',
-  		headers: {
-    		'Content-Type': 'application/json'
-  		},
-  		body: JSON.stringify({
-    		"key": "zltDLjGDHqJHzQ0tSHA3XSZJUTnV5TxBmjW2PopKInszFsDxqSAEubmtq5tRRLgm"
- 		})
-	})
-	.then(response => response.json())
-	.then(data =>{
-		authToken.value = data.access_token; 
-	}).catch(error => console.error(error));
-};
 
 const getWebCamList = function(map:any){
     const latlngBound = map.getBounds();
     const latlngNE = latlngBound.getNorthEast();
     const latlngSW = latlngBound.getSouthWest();    
     
-    const latitude_gte = latlngSW.lat(), latitude_lt = latlngNE.lat(), longitude_gte = latlngSW.lng(), longitude_lt = latlngNE.lng();
-    const token = 'Bearer ' + authToken.value ;
-	const queryMsg = `query {
-  		webcams(query:{status:"active",location:{
-                        longitude_lt:${longitude_lt},
-                        longitude_gte:${longitude_gte},
-                        latitude_lt:${latitude_lt},
-                        latitude_gte:${latitude_gte}}}
-    	,limit:200
-    	,sortBy:ID_ASC) {
-			id
-			title
-    		location{
-     		 	latitude
-      			longitude
-    		}
-            player{
-               day{
-                 available
-                 link
-              }
-           }
-           image{
-                current{
-                    thumbnail
-                }    
-           }
-  		}
-	}`;
-
-    const gmap  = document.getElementById("gmap");
-    if (gmap != null && gmap != undefined){
-            gmap.style.pointerEvents ="none";
-    }
-	fetch('https://realm.mongodb.com/api/client/v2.0/app/webcamql-qrkjj/graphql', {
+    const bound : Bound ={
+        latitude_gte : latlngSW.lat(),
+        latitude_lt : latlngNE.lat(),
+        longitude_gte : latlngSW.lng(),
+        longitude_lt : latlngNE.lng()
+    };
+    setGoogleMapPointer(document.getElementById("gmap"),"none");
+	fetch('https://d1x1ikt4r7hg2z.cloudfront.net/', {
   		method: 'POST',
   		headers: {
-			'Authorization': token  ,
     		'Content-Type': 'application/json'
   		},
-  		body: JSON.stringify({
-      		query: queryMsg
-  		})
+  		body: JSON.stringify(bound)
 	})
 	.then(response => response.json())
 	.then(data =>{
-        webCams.value = Array.from(data.data.webcams);
-        const gmap  = document.getElementById("gmap");
-        if (gmap != null && gmap != undefined){
-            gmap.style.pointerEvents = "auto";
-        }
+        webCams.value = Array.from(data);
+        setGoogleMapPointer(document.getElementById("gmap"),"auto");
 	})
-	.catch(error => console.error(error));
+	.catch(error =>{ 
+        console.log(error);
+        setGoogleMapPointer(document.getElementById("gmap"),"auto");
+    });
 };
 //
 // getLocation is called when the map is ready

@@ -19,4 +19,11 @@ type  webCamObj = {
     };
 };
 
-export {webCamObj}
+type Bound ={
+    latitude_gte: number,
+    latitude_lt: number,
+    longitude_gte:number,
+    longitude_lt:number,
+};
+
+export {webCamObj , Bound }

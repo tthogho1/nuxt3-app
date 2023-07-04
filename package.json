@@ -14,6 +14,7 @@
     "nuxt": "^3.3.3"
   },
   "dependencies": {
+    "@tensorflow/tfjs": "^4.6.0",
     "gh-pages": "^5.0.0",
     "nojekyll": "^0.0.2",
     "vue3-google-map": "^0.15.0"
