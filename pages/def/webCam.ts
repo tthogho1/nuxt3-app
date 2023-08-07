@@ -3,6 +3,7 @@ type  webCamObj = {
     status: string;
     title:  string;
     location : {
+        country: string;
         latitude: number;
         longitude: number;
     }
@@ -26,4 +27,31 @@ type Bound ={
     longitude_lt:number,
 };
 
-export {webCamObj , Bound }
+
+const webCamQuery = `{
+    id
+    title
+    location{
+        country
+        latitude
+        longitude
+    }
+    player{
+        day{
+            available
+            link
+        }
+    }
+    image{
+        current{
+            thumbnail
+        }    
+    }
+}`
+
+type accessTokenObj = {
+    accessToken: string;
+    getTime : number;
+}
+
+export {webCamObj , Bound , webCamQuery, accessTokenObj}

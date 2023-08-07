@@ -14,9 +14,19 @@
     "nuxt": "^3.3.3"
   },
   "dependencies": {
+    "@pinia/nuxt": "^0.4.11",
+    "@popperjs/core": "^2.11.8",
     "@tensorflow/tfjs": "^4.6.0",
+    "@vue/composition-api": "^1.7.1",
+    "bootstrap": "^5.3.0",
+    "bootstrap-icons": "^1.10.5",
     "gh-pages": "^5.0.0",
     "nojekyll": "^0.0.2",
+    "pinia": "^2.1.4",
+    "realm-web": "^2.0.0",
     "vue3-google-map": "^0.15.0"
+  },
+  "overrides": {
+    "vue": "latest"
   }
 }
