@@ -21,6 +21,7 @@
     "bootstrap": "^5.3.0",
     "bootstrap-icons": "^1.10.5",
     "gh-pages": "^5.0.0",
+    "mongodb": "^6.0.0",
     "nojekyll": "^0.0.2",
     "pinia": "^2.1.4",
     "realm-web": "^2.0.0",

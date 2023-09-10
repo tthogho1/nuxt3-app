@@ -11,7 +11,9 @@
         </Marker>
         </MarkerCluster>
     </GoogleMap>
-
+    <div>
+        Recommendation：
+    </div>
     <div style="margin-top:3%" class="container">
         <div class="row">
             <div class="col-2" v-for="webcam in recommends" :key="webcam.id">
@@ -47,7 +49,7 @@ import { getAuthenticate } from "../composables/getAccessToken" ;
 import { getWebCams } from "../composables/getWebCams";
 
 const config = useRuntimeConfig();
-const spWorker = new Worker('/searchPictureWorker.js');
+const spWorker = new Worker('./js/searchPictureWorker.js');
 
 spWorker.addEventListener('message', (e) => {
     console.log(' receive from Worker: ', e.data);
@@ -61,9 +63,16 @@ const markerOptions = ref({ position: center})
 const route = useRoute();
 const tokenStore = useTokenDataStore();
 
-onMounted(async () => {
+
+async function  getAccessTokenOfMongoAtlas(){
     const token  = await getAuthenticate();
     tokenStore.setAccessToken(token);
+}
+
+onMounted(() => {
+    getAccessTokenOfMongoAtlas();
+    setInterval(getAccessTokenOfMongoAtlas,
+        config.public.MONGODB_ATLAS_TOKEN_INTERVAL);
 });
 
 const webCams = ref<Array<webCamObj>>([]);    
@@ -86,6 +95,7 @@ const convertImageToBase64 = function(imageUrl:string):void {
             base64String:dataURL,
             token : tokenStore.accessToken 
         }
+        //alert("tokenStore" + tokenStore.accessToken);
         spWorker.postMessage(sendData);
     };
     

@@ -19,6 +19,11 @@
         </div>
     </div>
     <div class="row" style="width:80%;">
+        <input class="col-9" type="text" v-model="searchText">
+        <div class="col-1"></div>
+        <button type="button" id="next" class="col-2" v-on:click="searChByText()">search</button>
+    </div>
+    <div class="row" style="width:80%;">
         <button type="button" id="prev" class="col-1 link-button" v-on:click="prevWebCamList()">Prev</button>
         <button type="button" id="next" class="col-1 link-button" v-on:click="nextWebCamList()">Next</button>
         <label class="col-6"></label>
@@ -32,7 +37,12 @@
     <div class="row" v-for="webcam in webCams" :key="webcam.id" style="width:80%">
         <div class="col-2">{{webcam.id  }}</div>
         <div class="col-3"><img :src="webcam.image.current.thumbnail" /></div>
-        <div class="col-4" ><button  class="link-button" @click="gotoMap(webcam)">{{ webcam.title }}</button></div>
+        <div class="col-4" ><button  class="link-button" @click="gotoMap(webcam.location.latitude,webcam.location.longitude)">{{ webcam.title }}</button></div>
+    </div> 
+    <div class="row" v-for="searchedData in searchedDataArray" :key="searchedData.id" style="width:80%">
+        <div class="col-2">{{searchedData.id}}</div>
+        <div class="col-3"><img :src="searchedData.metadata.imgUrl" /></div>
+        <div class="col-4" ><button  class="link-button" @click="gotoMap(searchedData.metadata.latitude,searchedData.metadata.longitude)">{{ searchedData.metadata.title }}</button></div>
     </div>  
 </div>
 </template>
@@ -45,12 +55,14 @@ import { useTokenDataStore } from "../store/accessToken";
 import { webCamObj,webCamQuery } from "./def/webCam";
 import { NavigationFailureType, useRouter } from 'vue-router'
 import { getWebCams } from "../composables/getWebCams";
-import { NonMaxSuppressionV3 } from "@tensorflow/tfjs";
+import type { searchedObj } from "./def/searchedData";
+import { serialize } from "mongodb";
+
+const searchText = ref("")
+const searchedDataArray = ref<Array<searchedObj>>([]);
 
 const tokenStore = useTokenDataStore();
 const token = 'Bearer ' + tokenStore.accessToken;
-
-// console.log("token?:" + tokenStore.accessToken);
 
 const  countryCd = ref('')
 
@@ -61,7 +73,6 @@ const firstId = ref("");
 const lastId = ref("") ;
 const searchCount = ref(0);
 const searchStartId = ref("");
-
 
 const router = useRouter();
 
@@ -89,25 +100,22 @@ async function doSearch(queryMsg:string){
         lastId.value = webCams.value.slice(-1)[0].id;
 
         searchCount.value = webCams.value.length;
-        const next = document.getElementById("next");
-        const prev = document.getElementById("prev");
-        if (!next || !prev){
-            throw new Error("html error");
-            
-        }
+        
+        const next = document.getElementById("next") as HTMLButtonElement;
+        const prev = document.getElementById("prev") as HTMLButtonElement ;
         if (webCams.value.length >= 200 ){
-            next.setAttribute("disabled", "false");
+            next.disabled = false;
             next.style.textDecoration = "underline";
         }else{
-            next.setAttribute("disabled", "true");
+            next.disabled = true;
             next.style.textDecoration = "none";
         }
 
         if (searchStartId.value == firstId.value){
-            prev.setAttribute("disabled", "true");
+            prev.disabled = true;
             prev.style.textDecoration = "none";
         }else{
-            prev.setAttribute("disabled", "false");
+            prev.disabled = false;
             prev.style.textDecoration = "underline"
         }
 
@@ -118,6 +126,7 @@ async function doSearch(queryMsg:string){
 }
 
 const searChByCountry = async function () {
+    searchedDataArray.value =[];
 
     const queryMsg = `query {
         webcams(query:{status:"active",
@@ -133,9 +142,8 @@ const searChByCountry = async function () {
     await doSearch(queryMsg);
 
     searchStartId.value = firstId.value;
-    document.getElementById("prev").disabled= true;
-    document.getElementById("prev").style.textDecoration = "none";
-
+    (document.getElementById("prev") as HTMLButtonElement).disabled= true;
+    (document.getElementById("prev") as HTMLButtonElement).style.textDecoration = "none";
 }
 
 const nextWebCamList = async function(){
@@ -168,9 +176,33 @@ const prevWebCamList = async function(){
     doSearch(queryMsg);
 }
 
-const gotoMap = function(webcam:webCamObj) {
-    router.push({path:'/', query:{ lat:webcam.location.latitude , lng:webcam.location.longitude }});
+const gotoMap = function(latitude:number, longitude:number) {
+    router.push({path:'/', query:{ lat:latitude , lng:longitude }});
 }
+
+const searChByText = async function() {
+    webCams.value = [];
+
+    const response = await 	fetch('https://eitj2rd7kzy2rkcf7ciws5moy40jezcu.lambda-url.ap-northeast-1.on.aws/', {
+        method: 'POST',
+        headers: {
+			'Authorization': token  ,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            text: searchText.value
+        })
+	})
+
+    if ((response.status >= 400)) {
+        throw new Error('searCghByText error');
+    }
+
+    const data = await response.json();
+    searchedDataArray.value = data.data;
+    searchCount.value = data.data.length;
+}
+
 </script>
 
 <style scoped>

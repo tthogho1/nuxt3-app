@@ -66,7 +66,7 @@ self.addEventListener('message',(e) => {
     base64String: e.data.base64String,
   };
   
-  const {token} = e.data.token;
+  const token = e.data.token;
 
   // Fetch APIを使用してPOSTリクエストを送信する
   fetch(url, {
