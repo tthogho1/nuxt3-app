@@ -1,8 +1,8 @@
-import { ref } from "vue";
 import { defineStore } from "pinia";
+import { countryData } from "~/pages/def/country";
 
 export const useMasterDataStore = defineStore("masterdata",{
   state:() => {
-    return { coutrycodes: [] as string[]}
+    return { countries: [] as countryData[]}
   },
 });

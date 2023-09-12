@@ -3,19 +3,17 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-2"><label for="selectCode">Country Code</label></div>
-        <div class="col-2">
+        <div class="col-6">
         <select id="selectCode" v-model="countryCd">
-            <option v-for="code in masterdata.coutrycodes" :key="code" :value="code">
-                {{ code }}
+            <option v-for="countryData in masterdata.countries" :key="countryData.country_code" :value="countryData.country_code">
+                {{ countryData.country }}
             </option>
         </select>
-        </div>
-        <div class="col-2">            
         </div>
         <div class="col-3">
         <button type="button" class="btn btn-primary" v-on:click="searChByCountry()">Search </button>
         </div>
-        <div class="col-3">
+        <div class="col-1">
         </div>
     </div>
     <div class="row" style="width:80%;">
@@ -57,6 +55,8 @@ import { NavigationFailureType, useRouter } from 'vue-router'
 import { getWebCams } from "../composables/getWebCams";
 import type { searchedObj } from "./def/searchedData";
 import { serialize } from "mongodb";
+import {getCountryData} from "../composables/getCountryData";
+import type {countryData} from "../pages/def/country"
 
 const searchText = ref("")
 const searchedDataArray = ref<Array<searchedObj>>([]);
@@ -76,20 +76,22 @@ const searchStartId = ref("");
 
 const router = useRouter();
 
-const loginApiKey = async function(apiKey : string) {
+/*const loginApiKey = async function(apiKey : string) {
     const credentials = Realm.Credentials.apiKey(apiKey);
     const user = await app.logIn(credentials);
     
     return user;
-}
+}*/
 
 const masterdata = useMasterDataStore();
-if (masterdata.coutrycodes.length === 0 ){
-    const user = await loginApiKey("zltDLjGDHqJHzQ0tSHA3XSZJUTnV5TxBmjW2PopKInszFsDxqSAEubmtq5tRRLgm");
-    const countyCodes = await user.functions.getCountryCode();
+if (masterdata.countries.length === 0 ){
 
-    console.log("get country code " + countyCodes.length);
-    masterdata.coutrycodes = countyCodes;
+    //const user = await loginApiKey("zltDLjGDHqJHzQ0tSHA3XSZJUTnV5TxBmjW2PopKInszFsDxqSAEubmtq5tRRLgm");
+    //const countyCodes = await user.functions.getCountryCode();
+
+    const countries = await getCountryData();
+    console.log("get country data " + countries);
+    masterdata.countries = countries;
 }
 
 async function doSearch(queryMsg:string){
