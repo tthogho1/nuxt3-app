@@ -1,25 +1,29 @@
 <template>
-<Header class="header" />    
+<Header class="header" />
+<div id="loading" v-show="loading">Now loading...</div>    
 <div class="container-fluid">
     <div class="row">
-        <div class="col-2"><label for="selectCode">Country Code</label></div>
+        <div class="col-2"><label for="selectCode">Select Country</label></div>
         <div class="col-6">
-        <select id="selectCode" v-model="countryCd">
-            <option v-for="countryData in masterdata.countries" :key="countryData.country_code" :value="countryData.country_code">
-                {{ countryData.country }}
-            </option>
-        </select>
+            <input type="text" list="selectCode" v-model="countryCd" style="width:100%;"/>
+            <datalist id="selectCode">
+                <option v-for="countryData in masterdata.countries" :key="countryData.country_code" :value="countryData.country"></option>
+            </datalist>
         </div>
         <div class="col-3">
-        <button type="button" class="btn btn-primary" v-on:click="searChByCountry()">Search </button>
+            <button type="button" class="" v-on:click="searChByCountry()">Search </button>
         </div>
         <div class="col-1">
         </div>
     </div>
-    <div class="row" style="width:80%;">
-        <input class="col-9" type="text" v-model="searchText">
-        <div class="col-1"></div>
-        <button type="button" id="next" class="col-2" v-on:click="searChByText()">search</button>
+    <div class="row" style="width:80%;margin-top:1%">
+        <div class="col-2">Search By Word</div>
+        <div class="col-8">
+            <input  type="text" v-model="searchText" style="width:100%" />
+        </div>
+        <div class="col-2">
+            <button type="button"  v-on:click="searChByText()">Search</button>
+        </div>
     </div>
     <div class="row" style="width:80%;">
         <button type="button" id="prev" class="col-1 link-button" v-on:click="prevWebCamList()">Prev</button>
@@ -27,10 +31,10 @@
         <label class="col-6"></label>
         <div class="col-1">{{searchCount}} 件</div>
     </div>
-    <div class="row" style="width:80%">
-        <div class="card col-2 text-center bg-secondary">ID</div>
-        <div class="card col-3 text-center bg-secondary">ThumbNail</div>
-        <div class="card col-4 text-center bg-secondary">TiTle</div>
+    <div class="row" style="width:80%;background:cornflowerblue;font-weight:bold">
+        <div class="col-2 text-center" >ID</div>
+        <div class="col-3 text-center">ThumbNail</div>
+        <div class="col-4 text-center">TiTle</div>
     </div>
     <div class="row" v-for="webcam in webCams" :key="webcam.id" style="width:80%">
         <div class="col-2">{{webcam.id  }}</div>
@@ -53,9 +57,9 @@ import { useTokenDataStore } from "../store/accessToken";
 import { webCamObj,webCamQuery } from "./def/webCam";
 import { NavigationFailureType, useRouter } from 'vue-router'
 import { getWebCams } from "../composables/getWebCams";
-import type { searchedObj } from "./def/searchedData";
-import { serialize } from "mongodb";
+
 import {getCountryData} from "../composables/getCountryData";
+import type { searchedObj } from "./def/searchedData";
 import type {countryData} from "../pages/def/country"
 
 const searchText = ref("")
@@ -75,6 +79,9 @@ const searchCount = ref(0);
 const searchStartId = ref("");
 
 const router = useRouter();
+const maxSearchCount = 200;
+
+const loading = ref(false);
 
 /*const loginApiKey = async function(apiKey : string) {
     const credentials = Realm.Credentials.apiKey(apiKey);
@@ -86,16 +93,14 @@ const router = useRouter();
 const masterdata = useMasterDataStore();
 if (masterdata.countries.length === 0 ){
 
-    //const user = await loginApiKey("zltDLjGDHqJHzQ0tSHA3XSZJUTnV5TxBmjW2PopKInszFsDxqSAEubmtq5tRRLgm");
-    //const countyCodes = await user.functions.getCountryCode();
-
     const countries = await getCountryData();
-    console.log("get country data " + countries);
+    // console.log("get country data " + countries);
     masterdata.countries = countries;
 }
 
 async function doSearch(queryMsg:string){
     try {
+        loading.value = true;
 
         webCams.value = await getWebCams(token,queryMsg);
         firstId.value = webCams.value[0].id;
@@ -105,7 +110,7 @@ async function doSearch(queryMsg:string){
         
         const next = document.getElementById("next") as HTMLButtonElement;
         const prev = document.getElementById("prev") as HTMLButtonElement ;
-        if (webCams.value.length >= 200 ){
+        if (webCams.value.length >= maxSearchCount ){
             next.disabled = false;
             next.style.textDecoration = "underline";
         }else{
@@ -124,6 +129,7 @@ async function doSearch(queryMsg:string){
     } catch (error) {
         searchCount.value = 0;
     }
+    loading.value = false;
 
 }
 
@@ -134,9 +140,9 @@ const searChByCountry = async function () {
         webcams(query:{status:"active",
                         id_gt:"0000000000",
                         location:{
-                        country_code:"${countryCd.value}"}
+                        country:"${countryCd.value}"}
                     }
-        ,limit:200
+        ,limit:${maxSearchCount}
         ,sortBy:ID_ASC)` + 
         webCamQuery +
 	`}`;
@@ -153,9 +159,9 @@ const nextWebCamList = async function(){
         webcams(query:{status:"active",
                         id_gt:"${lastId.value}",
                         location:{
-                        country_code:"${countryCd.value}"}
+                        country:"${countryCd.value}"}
                     }
-        ,limit:200
+        ,limit:${maxSearchCount}
         ,sortBy:ID_ASC)` + 
         webCamQuery +
 	`}`;
@@ -168,9 +174,9 @@ const prevWebCamList = async function(){
         webcams(query:{status:"active",
                         id_lt:"${firstId.value}",
                         location:{
-                        country_code:"${countryCd.value}"}
+                        country:"${countryCd.value}"}
                     }
-        ,limit:200
+        ,limit:${maxSearchCount}
         ,sortBy:ID_ASC)` + 
         webCamQuery +
 	`}`;
@@ -185,6 +191,7 @@ const gotoMap = function(latitude:number, longitude:number) {
 const searChByText = async function() {
     webCams.value = [];
 
+    loading.value = true;
     const response = await 	fetch('https://eitj2rd7kzy2rkcf7ciws5moy40jezcu.lambda-url.ap-northeast-1.on.aws/', {
         method: 'POST',
         headers: {
@@ -197,22 +204,39 @@ const searChByText = async function() {
 	})
 
     if ((response.status >= 400)) {
-        throw new Error('searCghByText error');
+        //throw new Error('searCghByText error');
+        alert("get request Error");
+        return;
     }
 
     const data = await response.json();
+
+    console.log(data);
     searchedDataArray.value = data.data;
     searchCount.value = data.data.length;
+
+    loading.value = false;
 }
 
 </script>
 
 <style scoped>
 .link-button {
+
     background: none;
     border: none;
     color: blue;
     text-decoration: none;
     cursor: pointer;
+}
+
+#locaging {
+    z-index:100;
+    width:100%;
+    height:100%;
+    position:absolute;
+    top:0;left:0;
+    background:gray;
+    text-align:center;
 }
 </style>
