@@ -54,4 +54,19 @@ type accessTokenObj = {
     getTime : number;
 }
 
-export {webCamObj , Bound , webCamQuery, accessTokenObj}
+// from metal image index
+type  metalImageObj = {
+    id:string;
+    dist:  string;
+    imageUrl:string;
+    metadata : {
+        country: string; 
+        imgUrl:string;
+        latitude: number;
+        longitude: number;
+        title:string;
+    };
+};
+
+
+export {webCamObj , Bound , webCamQuery, accessTokenObj, metalImageObj}

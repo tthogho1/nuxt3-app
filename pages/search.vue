@@ -1,6 +1,6 @@
 <template>
 <Header class="header" />
-<div id="loading" v-show="loading">Now loading...</div>    
+<div class="loading" v-if="loading"><img src="../images/loading.gif" alt=""/></div>    
 <div class="container-fluid">
     <div class="row">
         <div class="col-2"><label for="selectCode">Select Country</label></div>
@@ -54,19 +54,17 @@ import { ref } from "vue";
 import * as Realm from "realm-web";
 import { useMasterDataStore } from "../store/masterData";
 import { useTokenDataStore } from "../store/accessToken";
-import { webCamObj,webCamQuery } from "./def/webCam";
+import { webCamObj,webCamQuery } from "../type/webCam";
 import { NavigationFailureType, useRouter } from 'vue-router'
-import { getWebCams } from "../composables/getWebCams";
 
-import {getCountryData} from "../composables/getCountryData";
-import type { searchedObj } from "./def/searchedData";
-import type {countryData} from "../pages/def/country"
+import type { metalWebCamObj } from "../type/searchedData";
+import type {countryData} from "../type/country"
 
 const searchText = ref("")
-const searchedDataArray = ref<Array<searchedObj>>([]);
+const searchedDataArray = ref<Array<metalWebCamObj>>([]);
 
-const tokenStore = useTokenDataStore();
-const token = 'Bearer ' + tokenStore.accessToken;
+//const tokenStore = useTokenDataStore();
+//const token = 'Bearer ' + tokenStore.accessToken;
 
 const  countryCd = ref('')
 
@@ -102,7 +100,8 @@ async function doSearch(queryMsg:string){
     try {
         loading.value = true;
 
-        webCams.value = await getWebCams(token,queryMsg);
+        //webCams.value = await getWebCams(token,queryMsg);
+        webCams.value = await getWebCamsByApi(queryMsg);
         firstId.value = webCams.value[0].id;
         lastId.value = webCams.value.slice(-1)[0].id;
 
@@ -195,7 +194,6 @@ const searChByText = async function() {
     const response = await 	fetch('https://eitj2rd7kzy2rkcf7ciws5moy40jezcu.lambda-url.ap-northeast-1.on.aws/', {
         method: 'POST',
         headers: {
-			'Authorization': token  ,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -230,13 +228,16 @@ const searChByText = async function() {
     cursor: pointer;
 }
 
-#locaging {
+.loading {
     z-index:100;
     width:100%;
     height:100%;
     position:absolute;
     top:0;left:0;
-    background:gray;
+    background-color:rgba(255,255,255,0.8);
     text-align:center;
+    align-items: center;
+    display: flex;
+    justify-content: center;
 }
 </style>

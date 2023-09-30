@@ -16,10 +16,10 @@
     </div>
     <div style="margin-top:3%" class="container">
         <div class="row">
-            <div class="col-2" v-for="webcam in recommends" :key="webcam.id">
-                <img :src="webcam.image.current.thumbnail" />
-                <div><button  class="link-button"  v-on:click="goToThere(webcam)">{{ webcam.title }}</button></div>
-                <div>country: {{ webcam.location.country }}</div>
+            <div class="col-2" v-for="metalImage in recommends" :key="metalImage.id">
+                <img :src="metalImage.imageUrl" />
+                <div><button  class="link-button"  v-on:click="goToThere(metalImage.metadata.latitude,metalImage.metadata.longitude)">{{ metalImage.metadata.title }}</button></div>
+                <div>country: {{ metalImage.metadata.country }}</div>
             </div> 
         </div>  
     </div>
@@ -42,19 +42,11 @@
 <script setup lang="ts">
 import { GoogleMap, InfoWindow, Marker ,MarkerCluster} from "vue3-google-map";
 import { ref } from "vue";
-import { webCamObj,webCamQuery } from "./def/webCam"
+import { webCamObj,webCamQuery,metalImageObj } from "../type/webCam"
 
 import { useTokenDataStore } from "../store/accessToken";
-import { getAuthenticate } from "../composables/getAccessToken" ;
-import { getWebCams } from "../composables/getWebCams";
 
 const config = useRuntimeConfig();
-const spWorker = new Worker('./js/searchPictureWorker.js');
-
-spWorker.addEventListener('message', (e) => {
-    console.log(' receive from Worker: ', e.data);
-    recommends.value = Array.from(e.data.data.webcams);
-}, false);
 
 const mapRef = ref(null);
 const center = ref({ lat: 0, lng: 0 }); // first position
@@ -63,54 +55,42 @@ const markerOptions = ref({ position: center})
 const route = useRoute();
 const tokenStore = useTokenDataStore();
 
-
-async function  getAccessTokenOfMongoAtlas(){
-    const token  = await getAuthenticate();
-    tokenStore.setAccessToken(token);
-}
-
-onMounted(() => {
-    getAccessTokenOfMongoAtlas();
-    setInterval(getAccessTokenOfMongoAtlas,
-        config.public.MONGODB_ATLAS_TOKEN_INTERVAL);
-});
-
 const webCams = ref<Array<webCamObj>>([]);    
-const recommends = ref<Array<webCamObj>>([]);
+const recommends = ref<Array<metalImageObj>>([]);
 
-const convertImageToBase64 = function(imageUrl:string):void {
-    const img = new Image();
-    img.crossOrigin = 'Anonymous';
-    img.onload = function() {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
+const goToThere = function(latitude:number,longitude:number){
+    center.value = { lat: latitude, lng: longitude };
+}
 
-        const ctx = canvas.getContext('2d');
-        if (ctx != null){
-            ctx.drawImage(img, 0, 0);
-        }
-        const dataURL = canvas.toDataURL('image/jpeg');
-        const sendData ={
-            base64String:dataURL,
-            token : tokenStore.accessToken 
-        }
-        //alert("tokenStore" + tokenStore.accessToken);
-        spWorker.postMessage(sendData);
-    };
+const openvideo = async function(webcamlink:string,imagelink:string) {
     
-    img.src = imageUrl;
-} 
+    window.open(webcamlink, '_blank');
 
-const goToThere = function(webCam:webCamObj){
-    center.value = { lat: webCam.location.latitude, lng: webCam.location.longitude };
+    const url = config.public.METAL_SEARCHE_URL;
+    const response = await fetch('api/getSimilarImages', {
+        method: 'POST',
+        body: JSON.stringify({
+            imageUrl: imagelink,
+        }),
+    });
+
+    const data = await response.json();
+    recommends.value = data.data;
 }
 
-const openvideo = function(webcamlink:string,imagelink:string) {
-    const url = webcamlink;
-    window.open(url, '_blank');
-    convertImageToBase64(imagelink);
+const getWebCams = async function(token:string,queryMsg:string): Promise<Array<webCamObj>>{
+    const response = await fetch('api/getWebCams', {
+        method: 'POST',
+        body: JSON.stringify({
+            query: queryMsg
+        })
+    });
+
+    const data = await response.json();
+
+    return Array.from(data.data.webcams);   
 }
+
 
 const getWebCamList = async function(map:any){
     const latlngBound = map.getBounds();
@@ -135,7 +115,12 @@ const getWebCamList = async function(map:any){
     if (gmap != null && gmap != undefined){
             gmap.style.pointerEvents ="none";
     }
-    webCams.value = await getWebCams(token,queryMsg);
+    try{
+        webCams.value = await getWebCamsByApi(queryMsg);
+    }catch(e){
+        //alert('get request Error');
+        console.log(e);
+    }   
     if (gmap != null && gmap != undefined){
         gmap.style.pointerEvents = "auto";
     }

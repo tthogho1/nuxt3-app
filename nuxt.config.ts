@@ -3,7 +3,7 @@
 export default defineNuxtConfig({
     css: ["bootstrap/dist/css/bootstrap.min.css",
         "bootstrap-icons/font/bootstrap-icons.css"],
-    ssr: false,
+    ssr: true,
     app: {
         baseURL: '/nuxt3-app/'
     },
