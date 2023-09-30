@@ -5,7 +5,7 @@ export default defineNuxtConfig({
         "bootstrap-icons/font/bootstrap-icons.css"],
     ssr: true,
     app: {
-        baseURL: '/nuxt3-app/'
+        baseURL: '/'
     },
     modules: ['@pinia/nuxt'],
     runtimeConfig: {
