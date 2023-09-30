@@ -1,4 +1,4 @@
-type  searchedObj = {
+type  metalWebCamObj = {
     id:string;
     dist:  string;
     text:string;
@@ -11,5 +11,4 @@ type  searchedObj = {
     };
 };
 
-
-export {searchedObj}
+export { metalWebCamObj }

@@ -1,10 +1,9 @@
 import { ref } from "vue";
-import {webCamObj} from "../pages/def/webCam";
-
+import { webCamObj,webCamQuery} from "../type/webCam"
 
 export const getWebCams = async function (token:string,queryMsg:string) : Promise<Array<webCamObj>>
 {
-    const response = await 	fetch('https://realm.mongodb.com/api/client/v2.0/app/webcamql-qrkjj/graphql', {
+    const response = await fetch('https://realm.mongodb.com/api/client/v2.0/app/webcamql-qrkjj/graphql', {
         method: 'POST',
         headers: {
 			'Authorization': token  ,
@@ -22,6 +21,24 @@ export const getWebCams = async function (token:string,queryMsg:string) : Promis
     const data = await response.json();
     console.log(data);
     
-    return Array.from(data.data.webcams);
-    
+    return Array.from(data.data.webcams);    
 };
+
+
+
+export const getWebCamsByApi = async function (queryMsg:string) : Promise<Array<webCamObj>>
+{
+    
+    const response = await fetch('api/getWebCams', {
+        method: 'POST',
+        body: JSON.stringify({
+            query: queryMsg
+        })
+    });
+
+    const data = await response.json();
+
+    return Array.from(data.data.webcams);
+
+};
+
