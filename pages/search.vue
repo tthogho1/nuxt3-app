@@ -1,6 +1,6 @@
 <template>
 <Header class="header" />
-<div class="loading" v-if="loading"><img src="../images/loading.gif" alt=""/></div>    
+<div class="loading" v-if="loading"><img src="/images/loading.gif" alt=""/></div>    
 <div class="container-fluid">
     <div class="row">
         <div class="col-2"><label for="selectCode">Select Country</label></div>

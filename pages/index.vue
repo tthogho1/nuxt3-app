@@ -130,7 +130,7 @@ const getWebCamList = async function(map:any){
 //
 const moveCurrentLocation = function(map:any,center:any, markerOptions:any){
     const markerIcon = {
-        url:'./images/man.png',
+        url:'/images/man.png',
         scaledSize: new mapRef.value.api.Size(30, 30)
     }
     navigator.geolocation.getCurrentPosition(
