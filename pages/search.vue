@@ -25,11 +25,11 @@
             <button type="button"  v-on:click="searChByText()">Search</button>
         </div>
     </div>
-    <div class="row" style="width:80%;">
+    <div class="row" style="width:100%;">
         <button type="button" id="prev" class="col-1 link-button" v-on:click="prevWebCamList()">Prev</button>
         <button type="button" id="next" class="col-1 link-button" v-on:click="nextWebCamList()">Next</button>
         <label class="col-6"></label>
-        <div class="col-1">{{searchCount}} 件</div>
+        <div class="col-1">count: {{searchCount}} </div>
     </div>
     <div class="row" style="width:80%;background:cornflowerblue;font-weight:bold">
         <div class="col-2 text-center" >ID</div>
@@ -77,7 +77,7 @@ const searchCount = ref(0);
 const searchStartId = ref("");
 
 const router = useRouter();
-const maxSearchCount = 200;
+const maxSearchCount = 100;
 
 const loading = ref(false);
 

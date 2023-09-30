@@ -1,7 +1,7 @@
 <template>
     <div class="header">
-        <nuxt-link to="/search">search</nuxt-link>
         <nuxt-link to="/">map</nuxt-link>
+        <nuxt-link to="/search">search</nuxt-link>
     </div>
 </template>
 

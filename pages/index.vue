@@ -100,13 +100,14 @@ const getWebCamList = async function(map:any){
     const latitude_gte = latlngSW.lat(), latitude_lt = latlngNE.lat(), longitude_gte = latlngSW.lng(), longitude_lt = latlngNE.lng();
     const token = 'Bearer ' + tokenStore.accessToken ;
     // console.log("token : " + token);
+    const maxSearchCount = 200;
 	const queryMsg = `query {
         webcams(query:{status:"active",location:{
                         longitude_lt:${longitude_lt},
                         longitude_gte:${longitude_gte},
                         latitude_lt:${latitude_lt},
                         latitude_gte:${latitude_gte}}}
-        ,limit:200
+        ,limit:${maxSearchCount}
         ,sortBy:ID_ASC)` 
         + webCamQuery +        
 	`}`;
