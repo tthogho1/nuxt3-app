@@ -1,15 +1,14 @@
-import {countryData} from "../pages/def/country";
+import {countryData} from "../type/country";
 import { createClient } from '@supabase/supabase-js';
 
-const config = useRuntimeConfig();
-const supabaseUrl = config.public.SUPABASE_URL;
-const supabaseKey = config.public.SUPABASE_PUBLIC_KEY;
-
-const client = createClient(supabaseUrl, supabaseKey);
 export const getCountryData = async function () : Promise<Array<countryData>>
 {
+    const config = useRuntimeConfig();
+
+    const client = createClient(config.supabaseUrl, config.supabaseKey);
+
     const {data:location,error} = await client.from('location').select('country_code,country');
-    console.log(location);
+//    console.log(location);
     if (error){ 
         console.log(error);
         throw new Error(error.message) ;
