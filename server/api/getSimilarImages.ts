@@ -6,16 +6,16 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     //console.log(body) // { "imageUrl": <url for image> }
 
-    const url = config.public.METAL_SEARCHE_URL+"?limit=5";
+    const url = config.metalSearcheUrl+"?limit=5";
     const response = await fetch(url, {
         method: 'POST',
         headers: {  
             'Content-Type': 'application/json',
-            'x-metal-api-key': config.public.METAL_API_KEY,
-            'x-metal-client-id': config.public.METAL_CLIENT_ID,
+            'x-metal-api-key': config.metalApiKey,
+            'x-metal-client-id': config.metalClientId,
         },
         body: JSON.stringify({
-            index: config.public.METAL_IMAGE_INDEX,
+            index: config.metalImageIndex,
             imageUrl: body.imageUrl,
         }),
     });

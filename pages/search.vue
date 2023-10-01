@@ -68,7 +68,7 @@ const searchedDataArray = ref<Array<metalWebCamObj>>([]);
 
 const  countryCd = ref('')
 
-const app = new Realm.App({ id: "webcamql-qrkjj"});
+//const app = new Realm.App({ id: "webcamql-qrkjj"});
 
 const webCams = ref<Array<webCamObj>>([]);    
 const firstId = ref("");

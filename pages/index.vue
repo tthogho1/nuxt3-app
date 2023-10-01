@@ -1,6 +1,6 @@
 <template>
     <Header class="header" />
-    <GoogleMap id="gmap" ref="mapRef" :api-key="config.public.GOOGLE_MAPS_API_KEY" style="width: 100%; height: 500px" :center="center" :zoom="15">
+    <GoogleMap id="gmap" ref="mapRef" :api-key="config.public.googleMapsApiKey" style="width: 100%; height: 500px" :center="center" :zoom="15">
         <Marker :options="markerOptions" />
         <MarkerCluster>
         <Marker v-for="(webCam, i) in webCams" :options="{ position: {lat:webCam.location.latitude,lng:webCam.location.longitude} }" :key="i">
@@ -66,7 +66,8 @@ const openvideo = async function(webcamlink:string,imagelink:string) {
     
     window.open(webcamlink, '_blank');
 
-    const url = config.public.METAL_SEARCHE_URL;
+   // const url = config.public.METAL_SEARCHE_URL;
+    const url = config.metalSeacheUrl;
     const response = await fetch('api/getSimilarImages', {
         method: 'POST',
         body: JSON.stringify({
