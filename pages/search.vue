@@ -2,46 +2,45 @@
 <Header class="header" />
 <div class="loading" v-if="loading"><img src="/images/loading.gif" alt=""/></div>    
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-2"><label for="selectCode">Select Country</label></div>
-        <div class="col-6">
-            <input type="text" list="selectCode" v-model="countryCd" style="width:100%;"/>
+    <div class="row" style="margin-top:2%">
+        <div class="col-2 fw-bold"><label class="form-label" for="selectCode">Select Country</label></div>
+        <div class="col-8">
+            <input type="text" list="selectCode" placeholder="Select Country" style="width:60%" v-model="countryCd"/>
             <datalist id="selectCode">
                 <option v-for="countryData in masterdata.countries" :key="countryData.country_code" :value="countryData.country"></option>
             </datalist>
         </div>
-        <div class="col-3">
+        <div class="col-2">
             <button type="button" class="" v-on:click="searChByCountry()">Search </button>
         </div>
-        <div class="col-1">
-        </div>
     </div>
-    <div class="row" style="width:80%;margin-top:1%">
-        <div class="col-2">Search By Word</div>
+    <div class="row" style="margin-top:1%">
+        <div class="col-2 fw-bold">Search by Word</div>
         <div class="col-8">
-            <input  type="text" v-model="searchText" style="width:100%" />
+            <input  type="text" v-model="searchText" style="width:100%"/>
         </div>
         <div class="col-2">
             <button type="button"  v-on:click="searChByText()">Search</button>
         </div>
     </div>
-    <div class="row" style="width:100%;">
+    <div class="row" style="width:100%;margin-top:2%;margin-left:2%">
         <button type="button" id="prev" class="col-1 link-button" v-on:click="prevWebCamList()">Prev</button>
         <button type="button" id="next" class="col-1 link-button" v-on:click="nextWebCamList()">Next</button>
         <label class="col-6"></label>
         <div class="col-1">count: {{searchCount}} </div>
     </div>
-    <div class="row" style="width:80%;background:cornflowerblue;font-weight:bold">
-        <div class="col-2 text-center" >ID</div>
-        <div class="col-3 text-center">ThumbNail</div>
-        <div class="col-4 text-center">TiTle</div>
+    <div class="row" style="font-weight:bold;margin-left:2%">
+        <div class="col-2 text-center" style="background:cornflowerblue;" >ID</div>
+        <div class="col-3 text-center" style="background:cornflowerblue;">ThumbNail</div>
+        <div class="col-5 text-center" style="background:cornflowerblue;">TiTle</div>
+        <div class="col-2"> </div>
     </div>
-    <div class="row" v-for="webcam in webCams" :key="webcam.id" style="width:80%">
+    <div class="row" v-for="webcam in webCams" :key="webcam.id" style="width:80%;margin-left:2%">
         <div class="col-2">{{webcam.id  }}</div>
         <div class="col-3"><img :src="webcam.image.current.thumbnail" /></div>
         <div class="col-4" ><button  class="link-button" @click="gotoMap(webcam.location.latitude,webcam.location.longitude)">{{ webcam.title }}</button></div>
     </div> 
-    <div class="row" v-for="searchedData in searchedDataArray" :key="searchedData.id" style="width:80%">
+    <div class="row" v-for="searchedData in searchedDataArray" :key="searchedData.id" style="width:80%;margin-left:2%">
         <div class="col-2">{{searchedData.id}}</div>
         <div class="col-3"><img :src="searchedData.metadata.imgUrl" /></div>
         <div class="col-4" ><button  class="link-button" @click="gotoMap(searchedData.metadata.latitude,searchedData.metadata.longitude)">{{ searchedData.metadata.title }}</button></div>
@@ -54,21 +53,16 @@ import { ref } from "vue";
 import * as Realm from "realm-web";
 import { useMasterDataStore } from "../store/masterData";
 import { useTokenDataStore } from "../store/accessToken";
-import { webCamObj,webCamQuery } from "../type/webCam";
+import { webCamObj,webCamQuery,metalImageObj } from "../type/webCam";
 import { NavigationFailureType, useRouter } from 'vue-router'
 
-import type { metalWebCamObj } from "../type/searchedData";
+//import type { metalWebCamObj } from "../type/searchedData";
 import type {countryData} from "../type/country"
 
 const searchText = ref("")
-const searchedDataArray = ref<Array<metalWebCamObj>>([]);
-
-//const tokenStore = useTokenDataStore();
-//const token = 'Bearer ' + tokenStore.accessToken;
+const searchedDataArray = ref<Array<metalImageObj>>([]);
 
 const  countryCd = ref('')
-
-//const app = new Realm.App({ id: "webcamql-qrkjj"});
 
 const webCams = ref<Array<webCamObj>>([]);    
 const firstId = ref("");
@@ -88,10 +82,12 @@ const loading = ref(false);
     return user;
 }*/
 
+const config = useRuntimeConfig();
 const masterdata = useMasterDataStore();
+
 if (masterdata.countries.length === 0 ){
 
-    const countries = await getCountryData();
+    const countries = await getCountryData(config.public.supabaseUrl,config.public.supabaseKey);
     // console.log("get country data " + countries);
     masterdata.countries = countries;
 }
@@ -191,29 +187,36 @@ const searChByText = async function() {
     webCams.value = [];
 
     loading.value = true;
-    const response = await 	fetch('https://eitj2rd7kzy2rkcf7ciws5moy40jezcu.lambda-url.ap-northeast-1.on.aws/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            text: searchText.value
+    try {
+        const response = await 	fetch('api/searchWebCamByText', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: searchText.value
+            })
         })
-	})
 
-    if ((response.status >= 400)) {
-        //throw new Error('searCghByText error');
-        alert("get request Error");
-        return;
+        if ((response.status >= 400)) {
+            //throw new Error('searCghByText error');
+            alert("get request Error :" + response.status);
+            return;
+        }
+
+        const res = await response.json();
+        const data = JSON.parse(res.body);
+
+        console.log(data);
+        searchedDataArray.value = data;
+        searchCount.value = data.length;
+    }catch(e){
+        alert("script Error on searCghByText");
+        console.log(e);
+    }finally{
+        loading.value = false;
     }
 
-    const data = await response.json();
-
-    console.log(data);
-    searchedDataArray.value = data.data;
-    searchCount.value = data.data.length;
-
-    loading.value = false;
 }
 
 </script>

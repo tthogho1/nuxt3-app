@@ -1,31 +1,35 @@
 <template>
     <Header class="header" />
-    <GoogleMap id="gmap" ref="mapRef" :api-key="config.public.googleMapsApiKey" style="width: 100%; height: 500px" :center="center" :zoom="15">
-        <Marker :options="markerOptions" />
-        <MarkerCluster>
-        <Marker v-for="(webCam, i) in webCams" :options="{ position: {lat:webCam.location.latitude,lng:webCam.location.longitude} }" :key="i">
-            <InfoWindow>
-                <div><button  class="link-button"  v-on:click="openvideo(webCam.player.day.link,webCam.image.current.thumbnail)">{{ webCam.title }}</button></div>
-                <div><img :src="webCam.image.current.thumbnail" /></div>
-            </InfoWindow>
-        </Marker>
-        </MarkerCluster>
-    </GoogleMap>
-    <div>
-        Recommendation：
+    <div  class="container-fluid">
+        <div class="row" >
+            <div class="col-9" >
+                <GoogleMap id="gmap" ref="mapRef" :api-key="config.public.googleMapsApiKey" style="height:80vh"  :center="center" :zoom="15">
+                    <Marker :options="markerOptions" />
+                    <MarkerCluster>
+                    <Marker v-for="(webCam, i) in webCams" :options="{ position: {lat:webCam.location.latitude,lng:webCam.location.longitude} }" :key="i">
+                        <InfoWindow>
+                            <div><button  class="link-button"  v-on:click="openvideo(webCam.player.day.link,webCam.image.current.thumbnail)">{{ webCam.title }}</button></div>
+                            <div><img :src="webCam.image.current.thumbnail" /></div>
+                        </InfoWindow>
+                    </Marker>
+                    </MarkerCluster>
+                </GoogleMap>
+            </div>
+            <div class="col-3">
+                <div>
+                    <span style="font-weight: bold">RECOMMENDS</span>
+                </div>
+                <div style="margin-top:3%" class="container">
+                    <div v-for="metalImage in recommends" :key="metalImage.id">
+                        <img :src="metalImage.imageUrl" />
+                        <div><button  class="link-button"  v-on:click="goToThere(metalImage.metadata.latitude,metalImage.metadata.longitude)">{{ metalImage.metadata.title }}</button></div>
+                        <div style="margin-bottom:3%">country: {{ metalImage.metadata.country }}</div>
+                    </div> 
+                </div>
+            </div>
+        </div>
     </div>
-    <div style="margin-top:3%" class="container">
-        <div class="row">
-            <div class="col-2" v-for="metalImage in recommends" :key="metalImage.id">
-                <img :src="metalImage.imageUrl" />
-                <div><button  class="link-button"  v-on:click="goToThere(metalImage.metadata.latitude,metalImage.metadata.longitude)">{{ metalImage.metadata.title }}</button></div>
-                <div>country: {{ metalImage.metadata.country }}</div>
-            </div> 
-        </div>  
-    </div>
-    <div class="m-5">
     <!-- <NuxtPage /> -->
-</div>
 </template>
 
 <style>
