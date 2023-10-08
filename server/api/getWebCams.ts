@@ -19,8 +19,6 @@ export default defineEventHandler(async (event) => {
         })
 	})
 
-    //console.log(response);
-    // console.log(response.status);
     if (!response.ok) {
         throw new Error('Network response was not ok.');
     }

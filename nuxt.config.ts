@@ -17,13 +17,20 @@ export default defineNuxtConfig({
         mongodbAtlasToken:'',
         mongodbAtlasGraphqlUrl:'',
         mongodbKey:'',
-        supabaseUrl:'',
-        supabaseKey:'',
 
         public: {
             googleMapsApiKey:'',
-    
+            supabaseUrl:'',
+            supabaseKey:'',
+            translateApi:'',
             MONGODB_ATLAS_TOKEN_INTERVAL : 1200000,
+        }
+    },
+    supabase: {
+        client: {
+            auth: {
+                persistSession: false //or true
+            }
         }
     }
 })
