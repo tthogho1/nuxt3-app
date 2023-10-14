@@ -5,7 +5,9 @@ export const getCountryData = async function (supabaseUrl:string,supabaseKey:str
 {
     const client = createClient(supabaseUrl, supabaseKey);
 
-    const {data:location,error} = await client.from('location').select('country_code,country');
+    const {data:location,error} = await client.from('location')
+                                            .select('country_code,country')
+                                            .order('country', { ascending: true });
 //    console.log(location);
     if (error){ 
         console.log(error);
