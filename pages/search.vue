@@ -1,5 +1,5 @@
 <template>
-<Header class="header" />
+<Header  />
 <div class="loading" v-if="loading"><img src="/images/loading.gif" alt=""/></div>    
 <div class="container-fluid">
     <div class="row" style="margin-top:2%">

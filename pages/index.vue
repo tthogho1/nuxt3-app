@@ -1,12 +1,12 @@
 <template>
-    <Header class="header" />
+    <Header />
     <div  class="container-fluid">
         <div class="row" >
             <div class="col-9" >
                 <GoogleMap id="gmap" ref="mapRef" :api-key="config.public.googleMapsApiKey" style="height:80vh"  :center="center" :zoom="15">
                     <Marker :options="markerOptions" />
                     <MarkerCluster>
-                    <Marker v-for="(webCam, i) in webCams" :options="{ position: {lat:webCam.location.latitude,lng:webCam.location.longitude} }" :key="i">
+                    <Marker v-for="(webCam, i) in webCams" :options="{ position: {lat:webCam.location.latitude,lng:webCam.location.longitude},icon:cameraIcon }" :key="i">
                         <InfoWindow>
                             <div><button  class="link-button"  v-on:click="openvideo(webCam.player.day.link,webCam.image.current.thumbnail)">{{ webCam.title }}</button></div>
                             <div><img :src="webCam.image.current.thumbnail" /></div>
@@ -36,11 +36,6 @@
 #gmap {
     pointer-events: auto; 
 }
-.header{
-    width: 100%;
-    height: 30px;
-    z-index: 1;
-}
 </style>
 
 <script setup lang="ts">
@@ -61,6 +56,10 @@ const tokenStore = useTokenDataStore();
 
 const webCams = ref<Array<webCamObj>>([]);    
 const recommends = ref<Array<metalImageObj>>([]);
+
+const cameraIcon = {
+    url:'/images/webcam.png',
+}
 
 const goToThere = function(latitude:number,longitude:number){
     center.value = { lat: latitude, lng: longitude };
