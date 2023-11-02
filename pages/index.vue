@@ -2,7 +2,7 @@
     <Header />
     <div  class="container-fluid">
         <div class="row" >
-            <div class="col-9" >
+            <div class="col-md-10" >
                 <GoogleMap id="gmap" ref="mapRef" :api-key="config.public.googleMapsApiKey" style="height:80vh"  :center="center" :zoom="15">
                     <Marker :options="markerOptions" />
                     <MarkerCluster>
@@ -15,12 +15,12 @@
                     </MarkerCluster>
                 </GoogleMap>
             </div>
-            <div class="col-3">
+            <div class="col-md-2">
                 <div>
                     <span style="font-weight: bold">RECOMMENDS</span>
                 </div>
-                <div style="margin-top:3%" class="container">
-                    <div v-for="metalImage in recommends" :key="metalImage.id">
+                <div style="margin-top:3%">
+                    <div class="recommend_div" v-for="metalImage in recommends" :key="metalImage.id">
                         <img :src="metalImage.imageUrl" />
                         <div><button  class="link-button"  v-on:click="goToThere(metalImage.metadata.latitude,metalImage.metadata.longitude)">{{ metalImage.metadata.title }}</button></div>
                         <div style="margin-bottom:3%">country: {{ metalImage.metadata.country }}</div>
@@ -181,4 +181,11 @@ watch(() => mapRef.value?.ready, (ready) => {
     text-decoration: underline;
     cursor: pointer;
 }
+
+@media screen and (max-width: 767px) {
+    .recommend_div {
+        display: inline-block;
+    }
+}
+
 </style>
