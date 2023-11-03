@@ -1,6 +1,16 @@
 <template>
     <Header />
     <div  class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <span>Input Address:
+                    <input type="text"  v-model="address" style="width:80%">
+                </span>
+            </div>
+            <div class="col-md-2">
+                <button v-on:click="moveToThere()">Goto</button>
+            </div>
+        </div>
         <div class="row" >
             <div class="col-md-10" >
                 <GoogleMap id="gmap" ref="mapRef" :api-key="config.public.googleMapsApiKey" style="height:80vh"  :center="center" :zoom="15">
@@ -44,12 +54,14 @@ import { ref } from "vue";
 import { webCamObj,webCamQuery,metalImageObj } from "../type/webCam"
 
 import { useTokenDataStore } from "../store/accessToken";
+import { NonMaxSuppressionV3 } from "@tensorflow/tfjs";
 
 const config = useRuntimeConfig();
 
 const mapRef = ref(null);
 const center = ref({ lat: 0, lng: 0 }); // first position
 const markerOptions = ref({ position: center})
+const address = ref("");
 
 const route = useRoute();
 const tokenStore = useTokenDataStore();
@@ -57,8 +69,26 @@ const tokenStore = useTokenDataStore();
 const webCams = ref<Array<webCamObj>>([]);    
 const recommends = ref<Array<metalImageObj>>([]);
 
+
 const cameraIcon = {
     url:'/images/webcam.png',
+}
+
+const moveToThere = async function(){
+    if (!mapRef.value){
+        alert("map api is not ready");
+        return;
+    }
+    const geocoder = new mapRef.value.api.Geocoder();
+    geocoder.geocode({ address: address.value }, (results:any, status:string) => {
+        if (status === 'OK') {
+            const lat = results[0].geometry.location.lat();
+            const lng = results[0].geometry.location.lng();
+            center.value = { lat: lat, lng: lng };            
+        }else{
+            alert('Geocode was not successful for the following reason: ' + status);
+        }
+    });
 }
 
 const goToThere = function(latitude:number,longitude:number){
@@ -134,6 +164,9 @@ const getWebCamList = async function(map:any){
 // getLocation is called when the map is ready
 //
 const moveCurrentLocation = function(map:any,center:any, markerOptions:any){
+    if (mapRef.value == null){
+        return;
+    }
     const markerIcon = {
         url:'/images/man.png',
         scaledSize: new mapRef.value.api.Size(30, 30)
