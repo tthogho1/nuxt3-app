@@ -1,5 +1,5 @@
 type  webCamObj = {
-    id:string;
+    webcamid:number;
     status: string;
     title:  string;
     location : {
@@ -8,12 +8,9 @@ type  webCamObj = {
         longitude: number;
     }
     player : {
-        day:{
-            available:string;
-            link:string;
-        }
+        day:string
     } 
-    image : {
+    images : {
             current : {
             thumbnail:string;
         }
@@ -29,7 +26,7 @@ type Bound ={
 
 
 const webCamQuery = `{
-    id
+    webcamid
     title
     location{
         country
@@ -37,12 +34,9 @@ const webCamQuery = `{
         longitude
     }
     player{
-        day{
-            available
-            link
-        }
+        day
     }
-    image{
+    images{
         current{
             thumbnail
         }    

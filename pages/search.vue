@@ -35,9 +35,9 @@
         <div class="col-5 text-center" style="background:cornflowerblue;">TiTle</div>
         <div class="col-2"> </div>
     </div>
-    <div class="row" v-for="webcam in webCams" :key="webcam.id" style="width:80%;margin-left:2%">
-        <div class="col-2">{{webcam.id  }}</div>
-        <div class="col-3"><img :src="webcam.image.current.thumbnail" /></div>
+    <div class="row" v-for="webcam in webCams" :key="webcam.webcamid" style="width:80%;margin-left:2%">
+        <div class="col-2">{{webcam.webcamid  }}</div>
+        <div class="col-3"><img :src="webcam.images.current.thumbnail" /></div>
         <div class="col-4" ><button  class="link-button" @click="gotoMap(webcam.location.latitude,webcam.location.longitude)">{{ webcam.title }}</button></div>
     </div> 
     <div class="row" v-for="searchedData in searchedDataArray" :key="searchedData.id" style="width:80%;margin-left:2%">
@@ -133,12 +133,12 @@ const searChByCountry = async function () {
 
     const queryMsg = `query {
         webcams(query:{status:"active",
-                        id_gt:"0000000000",
+                        webcamid_gt: 1000000000,
                         location:{
                         country:"${countryCd.value}"}
                     }
         ,limit:${maxSearchCount}
-        ,sortBy:ID_ASC)` + 
+        ,sortBy:WEBCAMID_ASC)` + 
         webCamQuery +
 	`}`;
     
@@ -152,12 +152,12 @@ const searChByCountry = async function () {
 const nextWebCamList = async function(){
     const queryMsg = `query {
         webcams(query:{status:"active",
-                        id_gt:"${lastId.value}",
+                        webcamid_gt:"${lastId.value}",
                         location:{
                         country:"${countryCd.value}"}
                     }
         ,limit:${maxSearchCount}
-        ,sortBy:ID_ASC)` + 
+        ,sortBy:WEBCAMID_ASC)` + 
         webCamQuery +
 	`}`;
 
@@ -167,12 +167,12 @@ const nextWebCamList = async function(){
 const prevWebCamList = async function(){
     const queryMsg = `query {
         webcams(query:{status:"active",
-                        id_lt:"${firstId.value}",
+                        webcamid_lt:"${firstId.value}",
                         location:{
                         country:"${countryCd.value}"}
                     }
         ,limit:${maxSearchCount}
-        ,sortBy:ID_ASC)` + 
+        ,sortBy:WEBCAMID_ASC)` + 
         webCamQuery +
 	`}`;
 
