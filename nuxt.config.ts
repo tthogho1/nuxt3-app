@@ -23,6 +23,7 @@ export default defineNuxtConfig({
             supabaseUrl:'',
             supabaseKey:'',
             translateApi:'',
+            imageServer:'',
             MONGODB_ATLAS_TOKEN_INTERVAL : 1200000,
         }
     },

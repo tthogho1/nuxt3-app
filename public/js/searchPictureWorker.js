@@ -8,11 +8,11 @@ function getWebCamInfo(idArrayString,token,self) {
   const queryMsg = `query {
     webcams(
       query:{
-        id_in:${idArrayString}
+        webcamid_in:${idArrayString}
       },
       limit: 100	
       ) {
-        id
+        webcamid
         title
         location{
           country
@@ -20,12 +20,9 @@ function getWebCamInfo(idArrayString,token,self) {
           longitude
         }
         player{
-          day{
-            available
-            link
-          }
+          day
         }
-        image{
+        images{
           current{
             thumbnail
           }    

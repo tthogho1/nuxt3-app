@@ -18,8 +18,8 @@
                     <MarkerCluster>
                     <Marker v-for="(webCam, i) in webCams" :options="{ position: {lat:webCam.location.latitude,lng:webCam.location.longitude},icon:cameraIcon }" :key="i">
                         <InfoWindow>
-                            <div><button  class="link-button"  v-on:click="openvideo(webCam.player.day.link,webCam.image.current.thumbnail)">{{ webCam.title }}</button></div>
-                            <div><img :src="webCam.image.current.thumbnail" /></div>
+                            <div><button  class="link-button"  v-on:click="openvideo(webCam.player.day,webCam.webcamid.toString())">{{ webCam.title }}</button></div>
+                            <div><img :src="config.public.imageServer + webCam.webcamid.toString() + imageExtension" /></div>
                         </InfoWindow>
                     </Marker>
                     </MarkerCluster>
@@ -54,9 +54,9 @@ import { ref } from "vue";
 import { webCamObj,webCamQuery,metalImageObj } from "../type/webCam"
 
 import { useTokenDataStore } from "../store/accessToken";
-import { NonMaxSuppressionV3 } from "@tensorflow/tfjs";
 
 const config = useRuntimeConfig();
+const imageExtension = ".jpg";
 
 const mapRef = ref(null);
 const center = ref({ lat: 0, lng: 0 }); // first position
@@ -142,7 +142,7 @@ const getWebCamList = async function(map:any){
                         latitude_lt:${latitude_lt},
                         latitude_gte:${latitude_gte}}}
         ,limit:${maxSearchCount}
-        ,sortBy:ID_ASC)` 
+        ,sortBy: WEBCAMID_ASC)` 
         + webCamQuery +        
 	`}`;
 
