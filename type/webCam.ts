@@ -62,5 +62,25 @@ type  metalImageObj = {
     };
 };
 
+type webCamMetadata = {
+    id: string;
+    score: number;
+    created_at: string;
+    width: number;
+    height: number;
+    description: string;
+    urls: {
+        small: string;
+    };
+    links: {
+        html: string;
+    };
+    location:{
+        country:string,
+        latitude:number,
+        longitude:number
+    }
+};
 
-export {webCamObj , Bound , webCamQuery, accessTokenObj, metalImageObj}
+
+export {webCamObj , Bound , webCamQuery, accessTokenObj, metalImageObj, webCamMetadata};
