@@ -37,13 +37,13 @@
     </div>
     <div class="row" v-for="webcam in webCams" :key="webcam.webcamid" style="width:80%;margin-left:2%">
         <div class="col-2">{{webcam.webcamid  }}</div>
-        <div class="col-3"><img :src="webcam.images.current.thumbnail" /></div>
+        <div class="col-3"><img :src="config.public.imageServer + webcam.webcamid + imageExtension" /></div>
         <div class="col-4" ><button  class="link-button" @click="gotoMap(webcam.location.latitude,webcam.location.longitude)">{{ webcam.title }}</button></div>
     </div> 
     <div class="row" v-for="searchedData in searchedDataArray" :key="searchedData.id" style="width:80%;margin-left:2%">
         <div class="col-2">{{searchedData.id}}</div>
-        <div class="col-3"><img :src="searchedData.metadata.imgUrl" /></div>
-        <div class="col-4" ><button  class="link-button" @click="gotoMap(searchedData.metadata.latitude,searchedData.metadata.longitude)">{{ searchedData.metadata.title }}</button></div>
+        <div class="col-3"><img :src="config.public.imageServer + searchedData.id + imageExtension" /></div>
+        <div class="col-4" ><button  class="link-button" @click="gotoMap(searchedData.location.latitude,searchedData.location.longitude)">{{ searchedData.description }}</button></div>
     </div>  
 </div>
 </template>
@@ -53,14 +53,15 @@ import { ref } from "vue";
 import * as Realm from "realm-web";
 import { useMasterDataStore } from "../store/masterData";
 import { useTokenDataStore } from "../store/accessToken";
-import { webCamObj,webCamQuery,metalImageObj } from "../type/webCam";
+import { webCamObj,webCamQuery,webCamMetadata } from "../type/webCam";
 import { NavigationFailureType, useRouter } from 'vue-router'
 
 //import type { metalWebCamObj } from "../type/searchedData";
 import type {countryData} from "../type/country"
 
+const imageExtension = ".jpg";
 const searchText = ref("")
-const searchedDataArray = ref<Array<metalImageObj>>([]);
+const searchedDataArray = ref<Array<webCamMetadata>>([]);
 
 const  countryCd = ref('')
 
@@ -98,8 +99,8 @@ async function doSearch(queryMsg:string){
 
         //webCams.value = await getWebCams(token,queryMsg);
         webCams.value = await getWebCamsByApi(queryMsg);
-        firstId.value = webCams.value[0].id;
-        lastId.value = webCams.value.slice(-1)[0].id;
+        firstId.value = webCams.value[0].webcamid.toString();
+        lastId.value = webCams.value.slice(-1)[0].webcamid.toString();
 
         searchCount.value = webCams.value.length;
         

@@ -1,5 +1,5 @@
 //import type { metalWebCamObj } from "../../type/searchedData";
-import type { metalImageObj } from "../../type/webCam";
+import type { webCamMetadata } from "../../type/webCam";
 import {translateText} from "../../composables/translateText";
 
 const config = useRuntimeConfig();
@@ -11,23 +11,20 @@ export default defineEventHandler(async (event) => {
     try{
         const queryString = await translateText(body.text,config);
 
-        const result =await fetch( config.metalSearcheUrl+"?limit=100", {
+        const result = await fetch( config.metalSearcheUrl+"/api/searchWebcam", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "x-metal-api-key": config.metalApiKey,
-                "x-metal-client-id": config.metalClientId
             },
             body: JSON.stringify({
-                "index": config.metalImageIndex,
-                "text": queryString
+                "query": queryString
             })
         });
 
-        //console.log(result);
         const data = await result.json();
-    
-        const filteredDatas = data.data.filter((item : metalImageObj) => parseFloat(item.dist) < 0.79);
+        //console.log(data);
+
+        const filteredDatas = data.filter((item : webCamMetadata) => item.score > 0.23);
             
         return {
             status: result.status,
