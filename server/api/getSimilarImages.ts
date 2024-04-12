@@ -6,17 +6,14 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     //console.log(body) // { "imageUrl": <url for image> }
 
-    const url = config.metalSearcheUrl+"?limit=5";
+    const url = config.metalSearcheUrl + "/api/searchWebcamByURL" ;
     const response = await fetch(url, {
         method: 'POST',
         headers: {  
             'Content-Type': 'application/json',
-            'x-metal-api-key': config.metalApiKey,
-            'x-metal-client-id': config.metalClientId,
         },
         body: JSON.stringify({
-            index: config.metalImageIndex,
-            imageUrl: body.imageUrl,
+            imageUrl: config.public.imageServer + body.imageUrl + ".jpg" ,
         }),
     });
     

@@ -30,10 +30,10 @@
                     <span style="font-weight: bold">RECOMMENDS</span>
                 </div>
                 <div style="margin-top:3%">
-                    <div class="recommend_div" v-for="metalImage in recommends" :key="metalImage.id">
-                        <img :src="metalImage.imageUrl" />
-                        <div><button  class="link-button"  v-on:click="goToThere(metalImage.metadata.latitude,metalImage.metadata.longitude)">{{ metalImage.metadata.title }}</button></div>
-                        <div style="margin-bottom:3%">country: {{ metalImage.metadata.country }}</div>
+                    <div class="recommend_div" v-for="webCam in recommends" :key="webCam.id">
+                        <img :src="webCam.urls.small" />
+                        <div><button  class="link-button"  v-on:click="goToThere(webCam.location.latitude,webCam.location.longitude)">{{ webCam.description }}</button></div>
+                        <div style="margin-bottom:3%">country: {{ webCam.location.country }}</div>
                     </div> 
                 </div>
             </div>
@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import { GoogleMap, InfoWindow, Marker ,MarkerCluster} from "vue3-google-map";
 import { ref } from "vue";
-import { webCamObj,webCamQuery,metalImageObj } from "../type/webCam"
+import { webCamObj,webCamQuery,webCamMetadata } from "../type/webCam"
 
 import { useTokenDataStore } from "../store/accessToken";
 
@@ -67,7 +67,7 @@ const route = useRoute();
 const tokenStore = useTokenDataStore();
 
 const webCams = ref<Array<webCamObj>>([]);    
-const recommends = ref<Array<metalImageObj>>([]);
+const recommends = ref<Array<webCamMetadata>>([]);
 
 
 const cameraIcon = {
@@ -109,7 +109,7 @@ const openvideo = async function(webcamlink:string,imagelink:string) {
     });
 
     const data = await response.json();
-    recommends.value = data.data;
+    recommends.value = data;
 }
 
 const getWebCams = async function(token:string,queryMsg:string): Promise<Array<webCamObj>>{
