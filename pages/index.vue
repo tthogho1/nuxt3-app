@@ -101,9 +101,12 @@ const openvideo = async function(webcamlink:string,imagelink:string) {
 
    // const url = config.public.METAL_SEARCHE_URL;
     const url = config.metalSeacheUrl;
+    const imageCount = 5;
+    
     const response = await fetch('api/getSimilarImages', {
         method: 'POST',
         body: JSON.stringify({
+            count : imageCount ,
             imageUrl: imagelink,
         }),
     });

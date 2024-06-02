@@ -13,6 +13,7 @@ export default defineEventHandler(async (event) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+            count:body.count,
             imageUrl: config.public.imageServer + body.imageUrl + ".jpg" ,
         }),
     });

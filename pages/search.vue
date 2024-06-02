@@ -23,6 +23,13 @@
             <button type="button"  v-on:click="searChByText()">Search</button>
         </div>
     </div>
+    <div class="row" style="margin-top:1%">
+        <div class="col-2"></div>
+        <div class="col-6 d-flex justify-content-end fw-bold">get image count</div>
+        <div class="col-2 d-flex justify-content-end">
+            <input  type="number" class="text-center" v-model="imageCount" :min="1" :max="99" style="margin-left:1%;width:100%"/>
+        </div>
+    </div>    
     <div class="row" style="width:100%;margin-top:2%;margin-left:2%">
         <button type="button" id="prev" class="col-1 link-button" v-on:click="prevWebCamList()">Prev</button>
         <button type="button" id="next" class="col-1 link-button" v-on:click="nextWebCamList()">Next</button>
@@ -64,6 +71,7 @@ const searchText = ref("")
 const searchedDataArray = ref<Array<webCamMetadata>>([]);
 
 const  countryCd = ref('')
+const imageCount = ref(5);
 
 const webCams = ref<Array<webCamObj>>([]);    
 const firstId = ref("");
@@ -187,6 +195,11 @@ const gotoMap = function(latitude:number, longitude:number) {
 const searChByText = async function() {
     webCams.value = [];
 
+    if (imageCount.value < 1 || imageCount.value > 100){
+        alert("image Count value must be between 1 and 100");
+        return;
+    }
+
     loading.value = true;
     try {
         const response = await 	fetch('api/searchWebCamByText', {
@@ -195,7 +208,8 @@ const searChByText = async function() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                text: searchText.value
+                count: imageCount.value,
+                query: searchText.value
             })
         })
 

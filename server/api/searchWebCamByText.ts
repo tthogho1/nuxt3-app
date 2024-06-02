@@ -9,7 +9,8 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event);
 
     try{
-        const queryString = await translateText(body.text,config);
+        const queryString = await translateText(body.query,config);
+        const imageCount = body.count || 10;
 
         const result = await fetch( config.metalSearcheUrl+"/api/searchWebcam", {
             method: "POST",
@@ -17,6 +18,7 @@ export default defineEventHandler(async (event) => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
+                "count": imageCount,
                 "query": queryString
             })
         });
