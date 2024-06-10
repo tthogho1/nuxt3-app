@@ -37,6 +37,7 @@ export const getWebCamsByApi = async function (queryMsg:string) : Promise<Array<
     });
 
     const data = await response.json();
+    console.log(data);
 
     return Array.from(data.data.webcams);
 

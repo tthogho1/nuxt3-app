@@ -36,22 +36,20 @@
         <label class="col-6"></label>
         <div class="col-1">count: {{searchCount}} </div>
     </div>
-    <div class="row" style="font-weight:bold;margin-left:2%">
-        <div class="col-2 text-center" style="background:cornflowerblue;" >ID</div>
-        <div class="col-3 text-center" style="background:cornflowerblue;">ThumbNail</div>
-        <div class="col-5 text-center" style="background:cornflowerblue;">TiTle</div>
-        <div class="col-2"> </div>
+</div>
+<div class="container text-center">
+    <div class="row row-cols-4">
+        <div class="col" v-for="webcam in webCams" :key="webcam.webcamid">
+            <div>{{webcam.webcamid  }}</div>
+            <div><img :src="config.public.imageServer + webcam.webcamid + imageExtension" /></div>
+            <div><button  class="link-button" @click="gotoMap(webcam.location.latitude,webcam.location.longitude)">{{ webcam.title }}</button></div>
+        </div>
+        <div class="row" v-for="searchedData in searchedDataArray" :key="searchedData.id">
+            <div>{{searchedData.id}}</div>
+            <div><img :src="config.public.imageServer + searchedData.id + imageExtension" /></div>
+            <div><button  class="link-button" @click="gotoMap(searchedData.location.latitude,searchedData.location.longitude)">{{ searchedData.description }}</button></div>
+        </div> 
     </div>
-    <div class="row" v-for="webcam in webCams" :key="webcam.webcamid" style="width:80%;margin-left:2%">
-        <div class="col-2">{{webcam.webcamid  }}</div>
-        <div class="col-3"><img :src="config.public.imageServer + webcam.webcamid + imageExtension" /></div>
-        <div class="col-4" ><button  class="link-button" @click="gotoMap(webcam.location.latitude,webcam.location.longitude)">{{ webcam.title }}</button></div>
-    </div> 
-    <div class="row" v-for="searchedData in searchedDataArray" :key="searchedData.id" style="width:80%;margin-left:2%">
-        <div class="col-2">{{searchedData.id}}</div>
-        <div class="col-3"><img :src="config.public.imageServer + searchedData.id + imageExtension" /></div>
-        <div class="col-4" ><button  class="link-button" @click="gotoMap(searchedData.location.latitude,searchedData.location.longitude)">{{ searchedData.description }}</button></div>
-    </div>  
 </div>
 </template>
 
@@ -131,6 +129,8 @@ async function doSearch(queryMsg:string){
         }
 
     } catch (error) {
+        console.log(error);
+        alert(error);
         searchCount.value = 0;
     }
     loading.value = false;
@@ -161,7 +161,7 @@ const searChByCountry = async function () {
 const nextWebCamList = async function(){
     const queryMsg = `query {
         webcams(query:{status:"active",
-                        webcamid_gt:"${lastId.value}",
+                        webcamid_gt:${lastId.value},
                         location:{
                         country:"${countryCd.value}"}
                     }
@@ -170,13 +170,13 @@ const nextWebCamList = async function(){
         webCamQuery +
 	`}`;
 
-    doSearch(queryMsg);
+    await doSearch(queryMsg);
 }
 
 const prevWebCamList = async function(){
     const queryMsg = `query {
         webcams(query:{status:"active",
-                        webcamid_lt:"${firstId.value}",
+                        webcamid_lt:${firstId.value},
                         location:{
                         country:"${countryCd.value}"}
                     }
@@ -185,7 +185,7 @@ const prevWebCamList = async function(){
         webCamQuery +
 	`}`;
 
-    doSearch(queryMsg);
+    await doSearch(queryMsg);
 }
 
 const gotoMap = function(latitude:number, longitude:number) {
