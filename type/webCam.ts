@@ -83,4 +83,5 @@ type webCamMetadata = {
 };
 
 
-export {webCamObj , Bound , webCamQuery, accessTokenObj, metalImageObj, webCamMetadata};
+export type {webCamObj , Bound , accessTokenObj, metalImageObj, webCamMetadata};
+export {webCamQuery};
