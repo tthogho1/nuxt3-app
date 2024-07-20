@@ -51,7 +51,8 @@
 <script setup lang="ts">
 import { GoogleMap, InfoWindow, Marker ,MarkerCluster} from "vue3-google-map";
 import { ref } from "vue";
-import { webCamObj,webCamQuery,webCamMetadata } from "../type/webCam"
+import type { webCamObj,webCamMetadata } from "../type/webCam"
+import { webCamQuery } from "../type/webCam"
 
 import { useTokenDataStore } from "../store/accessToken";
 
@@ -105,6 +106,9 @@ const openvideo = async function(webcamlink:string,imagelink:string) {
     
     const response = await fetch('api/getSimilarImages', {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
             count : imageCount ,
             imageUrl: imagelink,
@@ -118,6 +122,9 @@ const openvideo = async function(webcamlink:string,imagelink:string) {
 const getWebCams = async function(token:string,queryMsg:string): Promise<Array<webCamObj>>{
     const response = await fetch('api/getWebCams', {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
             query: queryMsg
         })

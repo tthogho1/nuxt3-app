@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { webCamObj,webCamQuery} from "../type/webCam"
+import type { webCamObj} from "../type/webCam"
 
 export const getWebCams = async function (token:string,queryMsg:string) : Promise<Array<webCamObj>>
 {
@@ -31,6 +31,9 @@ export const getWebCamsByApi = async function (queryMsg:string) : Promise<Array<
     
     const response = await fetch('api/getWebCams', {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
             query: queryMsg
         })

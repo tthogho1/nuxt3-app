@@ -2,7 +2,21 @@
 <Header  />
 <div class="loading" v-if="loading"><img src="/images/loading.gif" alt=""/></div>    
 <div class="container-fluid">
-    <div class="row" style="margin-top:2%">
+    <div class="row">
+        <div class="col-1  d-flex justify-content-center align-items-center">
+            <input type="checkbox" id="check1" v-model="checkCountry">
+        </div>
+        <div class="col-1">
+            <label for="check1">Country</label>
+        </div>
+        <div class="col-1  d-flex justify-content-center align-items-center">
+            <input type="checkbox" id="check2" v-model="checkWord">
+        </div>
+        <div class="col-1">
+            <label for="check2">Word</label>
+        </div>
+    </div>
+    <div v-if="checkCountry" class="row" style="margin-top:2%">
         <div class="col-2 fw-bold"><label class="form-label" for="selectCode">Select Country</label></div>
         <div class="col-8">
             <input type="text" list="selectCode" placeholder="Select Country" style="width:60%" v-model="countryCd"/>
@@ -14,20 +28,22 @@
             <button type="button" class="" v-on:click="searChByCountry()">Search </button>
         </div>
     </div>
-    <div class="row" style="margin-top:1%">
-        <div class="col-2 fw-bold">Search by Word</div>
-        <div class="col-8">
-            <input  type="text" v-model="searchText" style="width:100%"/>
+    <div v-if="checkWord">
+        <div class="row" style="margin-top:1%">
+            <div class="col-2 fw-bold">Search by Word</div>
+            <div class="col-8">
+                <input  type="text" v-model="searchText" style="width:100%"/>
+            </div>
+            <div class="col-2">
+                <button type="button"  v-on:click="searChByText()">Search</button>
+            </div>
         </div>
-        <div class="col-2">
-            <button type="button"  v-on:click="searChByText()">Search</button>
-        </div>
-    </div>
-    <div class="row" style="margin-top:1%">
-        <div class="col-2"></div>
-        <div class="col-6 d-flex justify-content-end fw-bold">get image count</div>
-        <div class="col-2 d-flex justify-content-end">
-            <input  type="number" class="text-center" v-model="imageCount" :min="1" :max="99" style="margin-left:1%;width:100%"/>
+        <div class="row" style="margin-top:1%">
+            <div class="col-2"></div>
+            <div class="col-6 d-flex justify-content-end fw-bold">get image count</div>
+            <div class="col-2 d-flex justify-content-end">
+                <input  type="number" class="text-center" v-model="imageCount" :min="1" :max="99" style="margin-left:1%;width:100%"/>
+            </div>
         </div>
     </div>    
     <div class="row" style="width:100%;margin-top:2%;margin-left:2%">
@@ -38,14 +54,14 @@
     </div>
 </div>
 <div class="container text-center">
-    <div class="row row-cols-4">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
         <div class="col" v-for="webcam in webCams" :key="webcam.webcamid">
-            <div>{{webcam.webcamid  }}</div>
+            <!-- div>{{webcam.webcamid  }}</div -->
             <div><img :src="config.public.imageServer + webcam.webcamid + imageExtension" /></div>
             <div><button  class="link-button" @click="gotoMap(webcam.location.latitude,webcam.location.longitude)">{{ webcam.title }}</button></div>
         </div>
         <div class="row" v-for="searchedData in searchedDataArray" :key="searchedData.id">
-            <div>{{searchedData.id}}</div>
+            <!-- div>{{searchedData.id}}</div -->
             <div><img :src="config.public.imageServer + searchedData.id + imageExtension" /></div>
             <div><button  class="link-button" @click="gotoMap(searchedData.location.latitude,searchedData.location.longitude)">{{ searchedData.description }}</button></div>
         </div> 
@@ -58,7 +74,8 @@ import { ref } from "vue";
 import * as Realm from "realm-web";
 import { useMasterDataStore } from "../store/masterData";
 import { useTokenDataStore } from "../store/accessToken";
-import { webCamObj,webCamQuery,webCamMetadata } from "../type/webCam";
+import type { webCamObj,webCamMetadata } from "../type/webCam";
+import { webCamQuery } from "../type/webCam";
 import { NavigationFailureType, useRouter } from 'vue-router'
 
 //import type { metalWebCamObj } from "../type/searchedData";
@@ -67,6 +84,10 @@ import type {countryData} from "../type/country"
 const imageExtension = ".jpg";
 const searchText = ref("")
 const searchedDataArray = ref<Array<webCamMetadata>>([]);
+
+const checkCountry = ref(true);
+const checkWord = ref(false);
+
 
 const  countryCd = ref('')
 const imageCount = ref(5);
@@ -82,12 +103,6 @@ const maxSearchCount = 100;
 
 const loading = ref(false);
 
-/*const loginApiKey = async function(apiKey : string) {
-    const credentials = Realm.Credentials.apiKey(apiKey);
-    const user = await app.logIn(credentials);
-    
-    return user;
-}*/
 
 const config = useRuntimeConfig();
 const masterdata = useMasterDataStore();
@@ -231,7 +246,6 @@ const searChByText = async function() {
     }finally{
         loading.value = false;
     }
-
 }
 
 </script>

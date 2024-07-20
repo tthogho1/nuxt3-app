@@ -1,8 +1,14 @@
 const config = useRuntimeConfig();
 
-export default defineEventHandler(async (event) => {
 
-    const body = await readBody(event);
+
+export default defineEventHandler(async (event) => {
+    let body ;
+    try{
+        body = await readBody(event);
+    }catch(e){
+        console.log(e);
+    }
     // body: { query : queryMsg}
 
     const url = config.mongodbAtlasGraphqlUrl;
@@ -22,6 +28,7 @@ export default defineEventHandler(async (event) => {
     if (!response.ok) {
         throw new Error('Network response was not ok.');
     }
+
 
     return await response.json();
 });
