@@ -3,22 +3,22 @@
 <div class="loading" v-if="loading"><img src="/images/loading.gif" alt=""/></div>    
 <div class="container-fluid">
     <div class="row">
-        <div class="col-1  d-flex justify-content-center align-items-center">
+        <div class="col-2 col-md-1  d-flex justify-content-center align-items-center">
             <input type="checkbox" id="check1" v-model="checkCountry">
         </div>
-        <div class="col-1">
+        <div class="col-2 col-md-1">
             <label for="check1">Country</label>
         </div>
-        <div class="col-1  d-flex justify-content-center align-items-center">
+        <div class="col-2 col-md-1  d-flex justify-content-center align-items-center">
             <input type="checkbox" id="check2" v-model="checkWord">
         </div>
-        <div class="col-1">
+        <div class="col-2 col-md-1">
             <label for="check2">Word</label>
         </div>
     </div>
     <div v-if="checkCountry" class="row" style="margin-top:2%">
         <div class="col-2 fw-bold"><label class="form-label" for="selectCode">Select Country</label></div>
-        <div class="col-8">
+        <div class="col-7">
             <input type="text" list="selectCode" placeholder="Select Country" style="width:60%" v-model="countryCd"/>
             <datalist id="selectCode">
                 <option v-for="countryData in masterdata.countries" :key="countryData.country_code" :value="countryData.country"></option>
@@ -31,7 +31,7 @@
     <div v-if="checkWord">
         <div class="row" style="margin-top:1%">
             <div class="col-2 fw-bold">Search by Word</div>
-            <div class="col-8">
+            <div class="col-7 col-sm-8">
                 <input  type="text" v-model="searchText" style="width:100%"/>
             </div>
             <div class="col-2">
@@ -47,8 +47,8 @@
         </div>
     </div>    
     <div class="row" style="width:100%;margin-top:2%;margin-left:2%">
-        <button type="button" id="prev" class="col-1 link-button" v-on:click="prevWebCamList()">Prev</button>
-        <button type="button" id="next" class="col-1 link-button" v-on:click="nextWebCamList()">Next</button>
+        <button type="button" id="prev" class="col-1 link-button" v-on:click="prevWebCamList()" disabled>Prev</button>
+        <button type="button" id="next" class="col-1 link-button" v-on:click="nextWebCamList()" disabled>Next</button>
         <label class="col-6"></label>
         <div class="col-1">count: {{searchCount}} </div>
     </div>
