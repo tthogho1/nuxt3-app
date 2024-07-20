@@ -1,16 +1,16 @@
 <template>
     <div  class="container-fluid">
-    <div class="header row">
-        <div class="col-8" >
-            <img src="/images/logo.svg" style="height:70px">
+        <div class="header row">
+            <div class="col-4 col-md-8" >
+                <img src="/images/logo.svg" style="height:70px">
+            </div>
+            <div class="col-2 col-md-1">
+            <nuxt-link to="/">map</nuxt-link>
+            </div>
+            <div class="col-2 col-md-1">
+                <nuxt-link to="/search">search</nuxt-link>
+            </div>
         </div>
-            <div class="col-1">
-        <nuxt-link to="/">map</nuxt-link>
-        </div>
-        <div class="col-1">
-            <nuxt-link to="/search">search</nuxt-link>
-        </div>
-    </div>
     </div>
 </template>
 
