@@ -1,5 +1,6 @@
 <template>
-<Header  />
+<div id="app">
+<Header title="search" />
 <div class="loading" v-if="loading"><img src="/images/loading.gif" alt=""/></div>    
 <div class="container-fluid">
     <div class="row">
@@ -66,6 +67,8 @@
             <div><button  class="link-button" @click="gotoMap(searchedData.location.latitude,searchedData.location.longitude)">{{ searchedData.description }}</button></div>
         </div> 
     </div>
+</div>
+<Footer/>
 </div>
 </template>
 
@@ -271,5 +274,14 @@ const searChByText = async function() {
     align-items: center;
     display: flex;
     justify-content: center;
+}
+
+#app {
+    display: grid;
+    grid-template-rows: auto 1fr auto; /* Header, content, footer */
+    min-height: 100vh; /* Full viewport height */
+}
+.main-content {
+    flex: 1; /* This allows the main content to grow and fill the available space */
 }
 </style>
