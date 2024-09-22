@@ -2,44 +2,41 @@
 <div id="app">
 <Header title="search" />
 <div class="loading" v-if="loading"><img src="/images/loading.gif" alt=""/></div>    
-<div class="container-fluid">
+<div class="container-fluid my-2">
     <div class="row">
-        <div class="col-2 col-md-1  d-flex justify-content-center align-items-center">
-            <input type="checkbox" id="check1" v-model="checkCountry">
-        </div>
-        <div class="col-2 col-md-1">
-            <label for="check1">Country</label>
-        </div>
-        <div class="col-2 col-md-1  d-flex justify-content-center align-items-center">
-            <input type="checkbox" id="check2" v-model="checkWord">
-        </div>
-        <div class="col-2 col-md-1">
-            <label for="check2">Word</label>
+        <div class="col-12 col-md-4">
+            <div class="btn-group w-100" role="group" aria-label="Basic radio toggle button group">
+                <input type="radio" class="btn-check" id="radio1" name="selectOption" v-model="selectedOption" value="country" autocomplete="off">
+                <label class="btn btn-outline-dark" for="radio1">Country</label>
+    
+                <input type="radio" class="btn-check" id="radio2" name="selectOption" v-model="selectedOption" value="word" autocomplete="off">
+                <label class="btn btn-outline-dark" for="radio2">Text</label>
+            </div>
         </div>
     </div>
-    <div v-if="checkCountry" class="row" style="margin-top:2%">
-        <div class="col-2 fw-bold"><label class="form-label" for="selectCode">Select Country</label></div>
+    <div v-if="selectedOption === 'country'" class="row my-2">
         <div class="col-7">
-            <input type="text" list="selectCode" placeholder="Select Country" style="width:60%" v-model="countryCd"/>
-            <datalist id="selectCode">
-                <option v-for="countryData in masterdata.countries" :key="countryData.country_code" :value="countryData.country"></option>
-            </datalist>
+            <div class="custom-select">
+                <input type="text" list="selectCode" placeholder="Select Country" v-model="countryCd"/>
+                <datalist id="selectCode">
+                    <option v-for="countryData in masterdata.countries" :key="countryData.country_code" :value="countryData.country"></option>
+                </datalist>
+            </div>
         </div>
         <div class="col-2">
-            <button type="button" class="" v-on:click="searChByCountry()">Search </button>
+            <button type="button" class="" v-on:click="searChByCountry()">Search</button>
         </div>
     </div>
-    <div v-if="checkWord">
-        <div class="row" style="margin-top:1%">
-            <div class="col-2 fw-bold">Search by Word</div>
-            <div class="col-7 col-sm-8">
-                <input  type="text" v-model="searchText" style="width:100%"/>
+    <div v-if="selectedOption === 'word'">
+        <div class="row my-2" >
+            <div class="col-9 col-sm-8">
+                <input  type="text" placeholder="Enter text for image search" v-model="searchText" style="width:100%"/>
             </div>
             <div class="col-2">
                 <button type="button"  v-on:click="searChByText()">Search</button>
             </div>
         </div>
-        <div class="row" style="margin-top:1%">
+        <div class="row my-2" >
             <div class="col-2"></div>
             <div class="col-6 d-flex justify-content-end fw-bold">get image count</div>
             <div class="col-2 d-flex justify-content-end">
@@ -47,9 +44,9 @@
             </div>
         </div>
     </div>    
-    <div class="row" style="width:100%;margin-top:2%;margin-left:2%">
-        <button type="button" id="prev" class="col-1 link-button" v-on:click="prevWebCamList()" disabled>Prev</button>
-        <button type="button" id="next" class="col-1 link-button" v-on:click="nextWebCamList()" disabled>Next</button>
+    <div class="row my-2 " style="width:100%;margin-left:2%">
+        <button type="button" id="prev" class="col-1 link-button" v-on:click="prevWebCamList()" disabled><i class="bi bi-chevron-double-left"></i></button>
+        <button type="button" id="next" class="col-1 link-button" v-on:click="nextWebCamList()" disabled><i class="bi bi-chevron-double-right"></i></button>
         <label class="col-6"></label>
         <div class="col-1">count: {{searchCount}} </div>
     </div>
@@ -88,9 +85,7 @@ const imageExtension = ".jpg";
 const searchText = ref("")
 const searchedDataArray = ref<Array<webCamMetadata>>([]);
 
-const checkCountry = ref(true);
-const checkWord = ref(false);
-
+const selectedOption = ref('country');
 
 const  countryCd = ref('')
 const imageCount = ref(5);
@@ -254,15 +249,46 @@ const searChByText = async function() {
 </script>
 
 <style scoped>
-.link-button {
+.custom-select {
+    position: relative;
+    width: 60%;
+  }
+  
+  .custom-select::after {
+    content: "\25BC";
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+  
+  .custom-select input {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 5px;
+    width: 100%;
+  }
 
+
+.link-button {
     background: none;
     border: none;
     color: blue;
     text-decoration: none;
     cursor: pointer;
 }
-
+  
+.link-button i {
+    color: #007bff; /* Enabled color (e.g., blue) */
+    font-size: 24px; /* Adjust size as needed */
+}
+  
+.link-button:disabled i {
+    color: #6c757d; /* Disabled color (e.g., gray) */
+    opacity: 0.5; /* Optional: reduce opacity for disabled state */
+}
+  
 .loading {
     z-index:100;
     width:100%;
@@ -283,5 +309,9 @@ const searChByText = async function() {
 }
 .main-content {
     flex: 1; /* This allows the main content to grow and fill the available space */
+}
+
+.custom-height {
+    height: 30px; /* または必要な高さ */
 }
 </style>
