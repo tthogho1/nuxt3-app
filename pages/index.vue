@@ -1,17 +1,15 @@
 <template>
     <Header title="map"/>
     <div  class="container-fluid">
-        <div class="row">
+        <div class="row my-2">
             <div class="col-md-8">
-                <span>Input Address:
-                    <input type="text"  v-model="address" style="width:80%">
-                </span>
+                <input type="text" placeholder="Please enter the location you want to move to"  v-model="address" style="width:80%">
             </div>
             <div class="col-md-2">
                 <button v-on:click="moveToThere()">Goto</button>
             </div>
         </div>
-        <div class="row" >
+        <div class="row my-2" >
             <div class="col-md-10" >
                 <GoogleMap id="gmap" ref="mapRef" :api-key="config.public.googleMapsApiKey" style="height:80vh"  :center="center" :zoom="15">
                     <Marker :options="markerOptions" />
