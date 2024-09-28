@@ -23,8 +23,8 @@
                 </datalist>
             </div>
         </div>
-        <div class="col-2">
-            <button type="button" class="" v-on:click="searChByCountry()">Search</button>
+        <div class="col-1">
+            <search-button @search-clicked="searChByCountry()"/>
         </div>
     </div>
     <div v-if="selectedOption === 'word'">
@@ -32,14 +32,13 @@
             <div class="col-9 col-sm-8">
                 <input  type="text" placeholder="Enter text for image search" v-model="searchText" style="width:100%"/>
             </div>
-            <div class="col-2">
-                <button type="button"  v-on:click="searChByText()">Search</button>
+            <div class="col-1">
+                <search-button @search-clicked="searChByText()"/>
             </div>
         </div>
-        <div class="row my-2" >
-            <div class="col-2"></div>
-            <div class="col-6 d-flex justify-content-end fw-bold">get image count</div>
-            <div class="col-2 d-flex justify-content-end">
+        <div class="d-flex align-items-center  my-2" >
+            <div class="fw-bold">image count</div>
+            <div class="col-1 ms-2">
                 <input  type="number" class="text-center" v-model="imageCount" :min="1" :max="99" style="margin-left:1%;width:100%"/>
             </div>
         </div>
@@ -48,21 +47,21 @@
         <button type="button" id="prev" class="col-1 link-button" v-on:click="prevWebCamList()" disabled><i class="bi bi-chevron-double-left"></i></button>
         <button type="button" id="next" class="col-1 link-button" v-on:click="nextWebCamList()" disabled><i class="bi bi-chevron-double-right"></i></button>
         <label class="col-6"></label>
-        <div class="col-1">count: {{searchCount}} </div>
+        <!--div class="col-1">count: {{searchCount}} </div -->
     </div>
-</div>
-<div class="container text-center">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
-        <div class="col" v-for="webcam in webCams" :key="webcam.webcamid">
-            <!-- div>{{webcam.webcamid  }}</div -->
-            <div><img :src="config.public.imageServer + webcam.webcamid + imageExtension" /></div>
-            <div><button  class="link-button" @click="gotoMap(webcam.location.latitude,webcam.location.longitude)">{{ webcam.title }}</button></div>
+    <div class="container text-center">
+        <div class="my-2 row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+            <div class="col" v-for="webcam in webCams" :key="webcam.webcamid">
+                <!-- div>{{webcam.webcamid  }}</div -->
+                <div><img :src="config.public.imageServer + webcam.webcamid + imageExtension" /></div>
+                <div><button  class="link-button" @click="gotoMap(webcam.location.latitude,webcam.location.longitude)">{{ webcam.title }}</button></div>
+            </div>
+            <div class="row" v-for="searchedData in searchedDataArray" :key="searchedData.id">
+                <!-- div>{{searchedData.id}}</div -->
+                <div><img :src="config.public.imageServer + searchedData.id + imageExtension" /></div>
+                <div><button  class="link-button" @click="gotoMap(searchedData.location.latitude,searchedData.location.longitude)">{{ searchedData.description }}</button></div>
+            </div> 
         </div>
-        <div class="row" v-for="searchedData in searchedDataArray" :key="searchedData.id">
-            <!-- div>{{searchedData.id}}</div -->
-            <div><img :src="config.public.imageServer + searchedData.id + imageExtension" /></div>
-            <div><button  class="link-button" @click="gotoMap(searchedData.location.latitude,searchedData.location.longitude)">{{ searchedData.description }}</button></div>
-        </div> 
     </div>
 </div>
 <Footer/>
@@ -251,7 +250,7 @@ const searChByText = async function() {
 <style scoped>
 .custom-select {
     position: relative;
-    width: 60%;
+    width: 100%;
   }
   
   .custom-select::after {

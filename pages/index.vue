@@ -3,14 +3,14 @@
     <div  class="container-fluid">
         <div class="row my-2">
             <div class="col-md-8">
-                <input type="text" placeholder="Please enter the location you want to move to"  v-model="address" style="width:80%">
+                <input type="text" placeholder="Please enter the location you want to move to"  v-model="address" style="width:100%">
             </div>
             <div class="col-md-2">
-                <button v-on:click="moveToThere()">Goto</button>
-            </div>
+                <search-button @search-clicked="moveToThere()"/>
+            </div>            
         </div>
         <div class="row my-2" >
-            <div class="col-md-10" >
+            <div :class="['col-md-10', {'col-md-12': recommends.length === 0}]" >
                 <GoogleMap id="gmap" ref="mapRef" :api-key="config.public.googleMapsApiKey" style="height:80vh"  :center="center" :zoom="15">
                     <Marker :options="markerOptions" />
                     <MarkerCluster>
@@ -23,7 +23,7 @@
                     </MarkerCluster>
                 </GoogleMap>
             </div>
-            <div class="col-md-2">
+            <div v-if="recommends.length > 0" class="col-md-2">
                 <div>
                     <span style="font-weight: bold">RECOMMENDS</span>
                 </div>
