@@ -49,18 +49,18 @@
         <label class="col-6"></label>
         <!--div class="col-1">count: {{searchCount}} </div -->
     </div>
-    <div class="container text-center">
-        <div class="my-2 row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
-            <div class="col" v-for="webcam in webCams" :key="webcam.webcamid">
-                <!-- div>{{webcam.webcamid  }}</div -->
-                <div><img :src="config.public.imageServer + webcam.webcamid + imageExtension" /></div>
-                <div><button  class="link-button" @click="gotoMap(webcam.location.latitude,webcam.location.longitude)">{{ webcam.title }}</button></div>
-            </div>
-            <div class="row" v-for="searchedData in searchedDataArray" :key="searchedData.id">
-                <!-- div>{{searchedData.id}}</div -->
-                <div><img :src="config.public.imageServer + searchedData.id + imageExtension" /></div>
-                <div><button  class="link-button" @click="gotoMap(searchedData.location.latitude,searchedData.location.longitude)">{{ searchedData.description }}</button></div>
-            </div> 
+    <div class="container-fluid px-0">
+        <div class="col-10 row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+                <div v-for="webcam in webCams" :key="webcam.webcamid">
+                    <!-- div>{{webcam.webcamid  }}</div -->
+                    <div><img :src="config.public.imageServer + webcam.webcamid + imageExtension" /></div>
+                    <div><button  class="link-button" @click="gotoMap(webcam.location.latitude,webcam.location.longitude)">{{ webcam.title }}</button></div>
+                </div>
+                <div v-for="searchedData in searchedDataArray" :key="searchedData.id">
+                    <!-- div>{{searchedData.id}}</div -->
+                    <div><img :src="config.public.imageServer + searchedData.id + imageExtension" /></div>
+                    <div><button  class="link-button" @click="gotoMap(searchedData.location.latitude,searchedData.location.longitude)">{{ searchedData.description }}</button></div>
+                </div>
         </div>
     </div>
 </div>
