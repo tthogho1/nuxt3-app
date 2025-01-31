@@ -12,6 +12,7 @@ export default defineEventHandler(async (event) => {
         const queryString = await translateText(body.query,config);
         const imageCount = body.count || 10;
 
+        console.log(config.metalSearcheUrl);
         const result = await fetch( config.metalSearcheUrl+"/api/searchWebcam", {
             method: "POST",
             headers: {
