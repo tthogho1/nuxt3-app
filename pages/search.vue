@@ -1,10 +1,11 @@
 <template>
 <div id="app">
 <Header title="search" />
-<div class="loading" v-if="loading"><img src="/images/loading.gif" alt=""/></div>    
+<div class="loading" v-if="loading"><img src="/images/loading.gif" alt=""/></div>   
 <div class="container-fluid my-2">
     <div class="row">
-        <div class="col-12 col-md-4">
+        <div class="col-12 text-decoration-underline fs-1 mb-3">Search Web Cameras.</div> 
+        <div class="col-12 col-md-4 mb-3">
             <div class="btn-group w-100" role="group" aria-label="Basic radio toggle button group">
                 <input type="radio" class="btn-check" id="radio1" name="selectOption" v-model="selectedOption" value="country" autocomplete="off">
                 <label class="btn btn-outline-dark" for="radio1">Country</label>
@@ -17,7 +18,7 @@
     <div v-if="selectedOption === 'country'" class="row my-2">
         <div class="col-7">
             <div class="custom-select">
-                <input type="text" list="selectCode" placeholder="Select Country" v-model="countryCd"/>
+                <input class="fs-5" type="text" list="selectCode" placeholder="Select Country" v-model="countryCd"/>
                 <datalist id="selectCode">
                     <option v-for="countryData in masterdata.countries" :key="countryData.country_code" :value="countryData.country"></option>
                 </datalist>
@@ -30,7 +31,7 @@
     <div v-if="selectedOption === 'word'">
         <div class="row my-2" >
             <div class="col-9 col-sm-8">
-                <input  type="text" placeholder="Enter text for image search" v-model="searchText" style="width:100%"/>
+                <input class="fs-5" type="text" placeholder="Enter text for image search" v-model="searchText" style="width:100%"/>
             </div>
             <div class="col-1">
                 <search-button @search-clicked="searChByText()"/>
