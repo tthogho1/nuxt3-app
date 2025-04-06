@@ -1,4 +1,4 @@
-import {countryData} from "../type/country";
+import type {countryData} from "../type/country";
 import { createClient } from '@supabase/supabase-js';
 
 export const getCountryData = async function (supabaseUrl:string,supabaseKey:string) : Promise<Array<countryData>>

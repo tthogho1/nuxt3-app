@@ -3,4 +3,4 @@ type countryData = {
     country:string;
 };
 
-export {countryData}
+export type {countryData}

@@ -21,6 +21,7 @@ export default defineNuxtConfig({
       mongodbAtlasToken:'',
       mongodbAtlasGraphqlUrl:'',
       mongodbKey:'',
+      mongodbAtlasGraphqlCountryUrl:'',
 
       public: {
           googleMapsApiKey:'',
@@ -28,10 +29,10 @@ export default defineNuxtConfig({
           supabaseKey:'',
           translateApi:'',
           imageServer:'',
+          mongodbKey:'',
           MONGODB_ATLAS_TOKEN_INTERVAL : 1200000,
       }
   },
-
   supabase: {
       client: {
           auth: {
