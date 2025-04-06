@@ -104,10 +104,13 @@ const loading = ref(false);
 
 const config = useRuntimeConfig();
 const masterdata = useMasterDataStore();
+// get toke from .env NUXT_MONGODB_KEY
+const TOKEN = config.public.mongodbKey;
 
 if (masterdata.countries.length === 0 ){
 
-    const countries = await getCountryData(config.public.supabaseUrl,config.public.supabaseKey);
+    //const countries = await getCountryData(config.public.supabaseUrl,config.public.supabaseKey);
+    const countries = await getCountryByGQL(TOKEN);
     // console.log("get country data " + countries);
     masterdata.countries = countries;
 }
