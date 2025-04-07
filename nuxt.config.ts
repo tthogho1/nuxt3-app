@@ -10,7 +10,7 @@ export default defineNuxtConfig({
       baseURL: '/'
   },
 
-  modules: ['@pinia/nuxt'],
+  modules: ['@pinia/nuxt','@nuxt/test-utils/module'],
 
   runtimeConfig: {
       metalClientId:'',

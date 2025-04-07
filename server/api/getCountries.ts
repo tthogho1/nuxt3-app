@@ -41,7 +41,7 @@ export default defineEventHandler(async (event) => {
     const modifiedData = {
         ...data,
         data: {
-            countries: data.data.countries.map((country: any) => {
+            countries: data.data.countries.map((country: any):countryData => {
                 return {
                     country_code: country.code,
                     country: country.country
