@@ -1,22 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { defineEventHandler, readBody } from 'h3';
+
+
+
 import handler from '../server/api/getCountries';
 import { mockNuxtImport } from '@nuxt/test-utils/runtime';
 
-// モックの設定
-vi.mock('h3', () => ({
-  defineEventHandler: vi.fn((handler) => handler),
-  readBody: vi.fn()
+vi.mock('nuxt', () => ({
+  useRuntimeConfig: vi.fn().mockReturnValue({
+    public: {
+      mongodbKey: 'test_key'
+    },
+    mongodbAtlasGraphqlCountryUrl: 'https://test-graphql-url.com'
+  })
 }));
-
-
-mockNuxtImport('useRuntimeConfig', () => ({
-  public: {
-    mongodbKey: 'test_key'
-  },
-  mongodbAtlasGraphqlCountryUrl: 'https://test-graphql-url.com'
-}))
-
 
 global.fetch = vi.fn();
 
@@ -35,13 +32,15 @@ describe('国データ取得API', () => {
     vi.clearAllMocks();
     
     // readBodyのモック
-    (readBody as any).mockResolvedValue({});
+    (vi.mocked(readBody) as any).mockResolvedValue({});
     
     // fetchのモック
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
-      json: async () => mockCountriesData
-    });
+      status: 200,
+      statusText: 'OK',
+      json: async () => mockCountriesData,
+    } as Response);
   });
 
   it('正常に国データを取得して整形できること', async () => {
@@ -54,7 +53,7 @@ describe('国データ取得API', () => {
       expect.objectContaining({
         method: 'POST',
         headers: {
-          'apiKey': 'test-token',
+          'apiKey': 'test_key',
           'Content-Type': 'application/json'
         },
         body: expect.any(String)
@@ -75,9 +74,12 @@ describe('国データ取得API', () => {
 
   it('APIエラー時に例外をスローすること', async () => {
     // fetchのモックをエラーケース用に上書き
-    (global.fetch as any).mockResolvedValue({
-      ok: false
-    });
+    vi.mocked(global.fetch).mockResolvedValue({
+      ok: false,
+      status: 500,
+      statusText: 'Internal Server Error',
+      json: async () => ({})
+    } as Response);
     
     // エラーがスローされることを検証
     await expect(handler(mockEvent)).rejects.toThrow('Network response was not ok.');
@@ -85,7 +87,7 @@ describe('国データ取得API', () => {
 
   it('readBodyでエラーが発生しても処理が続行されること', async () => {
     // readBodyのモックをエラーケース用に上書き
-    (readBody as any).mockRejectedValue(new Error('Body parse error'));
+    vi.mocked(readBody).mockRejectedValue(new Error('Body parse error'));
     
     // テスト実行
     const result = await handler(mockEvent);

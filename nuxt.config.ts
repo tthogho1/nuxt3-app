@@ -33,13 +33,6 @@ export default defineNuxtConfig({
           MONGODB_ATLAS_TOKEN_INTERVAL : 1200000,
       }
   },
-  supabase: {
-      client: {
-          auth: {
-              persistSession: false //or true
-          }
-      }
-  },
 
   compatibilityDate: "2024-07-18"
 })
