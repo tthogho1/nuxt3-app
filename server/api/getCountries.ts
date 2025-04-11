@@ -1,4 +1,6 @@
 import type {countryData} from "../../type/country";
+// add for unit test
+import { defineEventHandler, readBody } from 'h3';
 
 interface GraphQLResponse {
     data: {
@@ -9,11 +11,11 @@ interface GraphQLResponse {
     };
 }
 
-const config = useRuntimeConfig();
-const token = config.public.mongodbKey;
-const graphurl = config.mongodbAtlasGraphqlCountryUrl as string;
+export const handler = defineEventHandler(async (event) => {
+    const config = useRuntimeConfig();
+    const token = config.public.mongodbKey;
+    const graphurl = config.mongodbAtlasGraphqlCountryUrl as string;
 
-export default defineEventHandler(async (event) => {
     let body ;
     try{
         body = await readBody(event);
@@ -63,3 +65,6 @@ export default defineEventHandler(async (event) => {
         throw new Error('There was an error processing your request.');
     }
 });
+
+
+export default handler;
