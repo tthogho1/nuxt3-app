@@ -10,7 +10,7 @@ export default defineNuxtConfig({
       baseURL: '/'
   },
 
-  modules: ['@pinia/nuxt'],
+  modules: ['@pinia/nuxt','@nuxt/test-utils/module'],
 
   runtimeConfig: {
       metalClientId:'',
@@ -31,13 +31,6 @@ export default defineNuxtConfig({
           imageServer:'',
           mongodbKey:'',
           MONGODB_ATLAS_TOKEN_INTERVAL : 1200000,
-      }
-  },
-  supabase: {
-      client: {
-          auth: {
-              persistSession: false //or true
-          }
       }
   },
 
