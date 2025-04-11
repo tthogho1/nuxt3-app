@@ -50,20 +50,12 @@
         <label class="col-6"></label>
         <!--div class="col-1">count: {{searchCount}} </div -->
     </div>
-    <div class="container-fluid px-0">
-        <div class="col-10 row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
-                <div v-for="webcam in webCams" :key="webcam.webcamid">
-                    <!-- div>{{webcam.webcamid  }}</div -->
-                    <div><img :src="config.public.imageServer + webcam.webcamid + imageExtension" /></div>
-                    <div><button  class="link-button" @click="gotoMap(webcam.location.latitude,webcam.location.longitude)">{{ webcam.title }}</button></div>
-                </div>
-                <div v-for="searchedData in searchedDataArray" :key="searchedData.id">
-                    <!-- div>{{searchedData.id}}</div -->
-                    <div><img :src="config.public.imageServer + searchedData.id + imageExtension" /></div>
-                    <div><button  class="link-button" @click="gotoMap(searchedData.location.latitude,searchedData.location.longitude)">{{ searchedData.description }}</button></div>
-                </div>
-        </div>
-    </div>
+    <WebcamGallery 
+        :webcams="webCams" 
+        :searchedDataArray="searchedDataArray" 
+        :imageExtension="imageExtension"
+        @mapMove="handleMapMove" 
+    />
 </div>
 <Footer/>
 </div>
@@ -74,9 +66,10 @@ import { ref } from "vue";
 import * as Realm from "realm-web";
 import { useMasterDataStore } from "../store/masterData";
 import { useTokenDataStore } from "../store/accessToken";
-import type { webCamObj,webCamMetadata } from "../type/webCam";
+import type { webCamObj,webCamMetadata,location } from "../type/webCam";
 import { webCamQuery } from "../type/webCam";
 import { NavigationFailureType, useRouter } from 'vue-router'
+import WebcamGallery from '@/components/WebcamGallery.vue';
 
 //import type { metalWebCamObj } from "../type/searchedData";
 import type {countryData} from "../type/country"
@@ -101,7 +94,6 @@ const maxSearchCount = 100;
 
 const loading = ref(false);
 
-
 const config = useRuntimeConfig();
 const masterdata = useMasterDataStore();
 // get toke from .env NUXT_MONGODB_KEY
@@ -109,49 +101,55 @@ const TOKEN = config.public.mongodbKey;
 
 if (masterdata.countries.length === 0 ){
 
-    //const countries = await getCountryData(config.public.supabaseUrl,config.public.supabaseKey);
     const countries = await getCountryByGQL(TOKEN);
-    // console.log("get country data " + countries);
     masterdata.countries = countries;
 }
 
-async function doSearch(queryMsg:string){
+async function doSearch(queryMsg: string) {
     try {
         loading.value = true;
-
-        //webCams.value = await getWebCams(token,queryMsg);
+        
+        // データ取得と基本値の設定
         webCams.value = await getWebCamsByApi(queryMsg);
-        firstId.value = webCams.value[0].webcamid.toString();
-        lastId.value = webCams.value.slice(-1)[0].webcamid.toString();
-
+        updateIdValues();
         searchCount.value = webCams.value.length;
         
-        const next = document.getElementById("next") as HTMLButtonElement;
-        const prev = document.getElementById("prev") as HTMLButtonElement ;
-        if (webCams.value.length >= maxSearchCount ){
-            next.disabled = false;
-            next.style.textDecoration = "underline";
-        }else{
-            next.disabled = true;
-            next.style.textDecoration = "none";
-        }
-
-        if (searchStartId.value == firstId.value){
-            prev.disabled = true;
-            prev.style.textDecoration = "none";
-        }else{
-            prev.disabled = false;
-            prev.style.textDecoration = "underline"
-        }
-
+        // ページネーションボタンの状態更新
+        updatePaginationButtons();
+        
     } catch (error) {
         console.log(error);
         alert(error);
         searchCount.value = 0;
+    } finally {
+        loading.value = false;
     }
-    loading.value = false;
-
 }
+
+// ID値の更新を処理する関数
+function updateIdValues() {
+    if (webCams.value.length > 0) {
+        firstId.value = webCams.value[0].webcamid.toString();
+        lastId.value = webCams.value[webCams.value.length - 1].webcamid.toString();
+    }
+}
+
+// ページネーションボタンの状態を更新する関数
+function updatePaginationButtons() {
+    const next = document.getElementById("next") as HTMLButtonElement;
+    const prev = document.getElementById("prev") as HTMLButtonElement;
+    
+    // 次へボタンの状態設定
+    const hasMoreResults = webCams.value.length >= maxSearchCount;
+    next.disabled = !hasMoreResults;
+    next.style.textDecoration = hasMoreResults ? "underline" : "none";
+    
+    // 前へボタンの状態設定
+    const isFirstPage = searchStartId.value === firstId.value;
+    prev.disabled = isFirstPage;
+    prev.style.textDecoration = isFirstPage ? "none" : "underline";
+}
+
 
 const searChByCountry = async function () {
     searchedDataArray.value =[];
@@ -174,37 +172,31 @@ const searChByCountry = async function () {
     (document.getElementById("prev") as HTMLButtonElement).style.textDecoration = "none";
 }
 
-const nextWebCamList = async function(){
+
+const nextWebCamList = () => getWebCamList('next');
+const prevWebCamList = () => getWebCamList('prev');
+
+const getWebCamList = async function(direction = 'next'){
+    const condition = direction === 'next' 
+        ? `webcamid_gt:${lastId.value}` 
+        : `webcamid_lt:${firstId.value}`;
+        
     const queryMsg = `query {
         webcams(query:{status:"active",
-                        webcamid_gt:${lastId.value},
+                        ${condition},
                         location:{
                         country:"${countryCd.value}"}
                     }
         ,limit:${maxSearchCount}
         ,sortBy:WEBCAMID_ASC)` + 
         webCamQuery +
-	`}`;
+    `}`;
 
     await doSearch(queryMsg);
 }
 
-const prevWebCamList = async function(){
-    const queryMsg = `query {
-        webcams(query:{status:"active",
-                        webcamid_lt:${firstId.value},
-                        location:{
-                        country:"${countryCd.value}"}
-                    }
-        ,limit:${maxSearchCount}
-        ,sortBy:WEBCAMID_ASC)` + 
-        webCamQuery +
-	`}`;
 
-    await doSearch(queryMsg);
-}
-
-const gotoMap = function(latitude:number, longitude:number) {
+const handleMapMove = ({latitude , longitude } : location) => {
     router.push({path:'/', query:{ lat:latitude , lng:longitude }});
 }
 

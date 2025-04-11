@@ -82,6 +82,10 @@ type webCamMetadata = {
     }
 };
 
+type location = {
+    latitude:number,
+    longitude:number
+};
 
-export type {webCamObj , Bound , accessTokenObj, metalImageObj, webCamMetadata};
+export type {webCamObj , Bound , accessTokenObj, metalImageObj, webCamMetadata ,location};
 export {webCamQuery};
