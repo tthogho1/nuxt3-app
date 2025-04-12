@@ -3,8 +3,8 @@
 <Header title="search" />
 <div class="loading" v-if="loading"><img src="/images/loading.gif" alt=""/></div>   
 <div class="container-fluid my-2">
-    <div class="row">
-        <div class="col-12 text-decoration-underline fs-1 mb-3">Search Web Cameras.</div> 
+    <div class="row justify-content-center text-center">
+        <div class="col-12  fs-3 mb-4">Search Web Cameras</div> 
         <div class="col-12 col-md-4 mb-3">
             <div class="btn-group w-100" role="group" aria-label="Basic radio toggle button group">
                 <input type="radio" class="btn-check" id="radio1" name="selectOption" v-model="selectedOption" value="country" autocomplete="off">
@@ -15,40 +15,43 @@
             </div>
         </div>
     </div>
-    <div v-if="selectedOption === 'country'" class="row my-2">
+    <div v-if="selectedOption === 'country'" class="row justify-content-center text-center my-2">
         <div class="col-7">
             <div class="custom-select">
-                <input class="fs-5" type="text" list="selectCode" placeholder="Select Country" v-model="countryCd"/>
+                <input class="fs-5" type="text" list="selectCode" placeholder="Select Country" v-model="countryCd" @change="searChByCountry()"/>
                 <datalist id="selectCode">
                     <option v-for="countryData in masterdata.countries" :key="countryData.country_code" :value="countryData.country"></option>
                 </datalist>
             </div>
         </div>
-        <div class="col-1">
-            <search-button @search-clicked="searChByCountry()"/>
-        </div>
     </div>
-    <div v-if="selectedOption === 'word'">
-        <div class="row my-2" >
-            <div class="col-9 col-sm-8">
-                <input class="fs-5" type="text" placeholder="Enter text for image search" v-model="searchText" style="width:100%"/>
-            </div>
-            <div class="col-1">
-                <search-button @search-clicked="searChByText()"/>
+    <div v-if="selectedOption === 'word'" >
+        <div class="search-container">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12">
+                        <div class="search-wrapper d-flex align-items-center px-3 py-1">
+                            <input type="text" v-model="searchText" class="form-control border-0" placeholder="Enter text for image search">
+                            <button class="btn btn-search" type="button" @click="searChByText()" >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="d-flex align-items-center  my-2" >
+        <div class="d-flex align-items-center my-2" >
             <div class="fw-bold">image count</div>
             <div class="col-1 ms-2">
                 <input  type="number" class="text-center" v-model="imageCount" :min="1" :max="99" style="margin-left:1%;width:100%"/>
             </div>
         </div>
     </div>    
-    <div class="row my-2 " style="width:100%;margin-left:2%">
+    <div v-show="webCams.length >= maxSearchCount" class="row my-2  justify-content-center text-center" style="width:100%;margin-left:2%">
         <button type="button" id="prev" class="col-1 link-button" v-on:click="prevWebCamList()" disabled><i class="bi bi-chevron-double-left"></i></button>
         <button type="button" id="next" class="col-1 link-button" v-on:click="nextWebCamList()" disabled><i class="bi bi-chevron-double-right"></i></button>
-        <label class="col-6"></label>
-        <!--div class="col-1">count: {{searchCount}} </div -->
     </div>
     <WebcamGallery 
         :webcams="webCams" 
@@ -152,6 +155,12 @@ function updatePaginationButtons() {
 
 
 const searChByCountry = async function () {
+    // webCams
+    if (countryCd.value == ""){
+        webCams.value = [];
+        return;
+    }
+
     searchedDataArray.value =[];
 
     const queryMsg = `query {
@@ -194,7 +203,6 @@ const getWebCamList = async function(direction = 'next'){
 
     await doSearch(queryMsg);
 }
-
 
 const handleMapMove = ({latitude , longitude } : location) => {
     router.push({path:'/', query:{ lat:latitude , lng:longitude }});
@@ -309,4 +317,27 @@ const searChByText = async function() {
 .custom-height {
     height: 30px; /* または必要な高さ */
 }
+
+.search-container {
+    background-color: #6c5ce7;
+    padding: 10px 0;
+}
+.search-wrapper {
+    background-color: white;
+    border-radius: 25px;
+}
+.form-control {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+}
+.form-control:focus {
+    box-shadow: none;
+    border: none;
+}
+.btn-search {
+    border: none;
+    background: transparent;
+}
+
 </style>

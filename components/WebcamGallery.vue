@@ -1,27 +1,31 @@
 <template>
-    <div class="container-fluid px-0">
-      <div class="col-10 row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+    <div class="container-fluid px-0 d-flex justify-content-center">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3 justify-content-center" style="max-width: 1200px;">
         <!-- Webcamsのリスト表示 -->
-        <div v-for="webcam in webcams" :key="webcam.webcamid">
-          <div>
-            <img :src="getImageUrl(webcam.webcamid)" alt="Webcam image" />
-          </div>
-          <div>
-            <button class="link-button" @click="gotoMap(webcam.location.latitude, webcam.location.longitude)">
-              {{ webcam.title }}
-            </button>
+        <div class="col" v-for="webcam in webcams" :key="webcam.webcamid">
+          <div class="card h-100">
+            <div>
+              <img class="card-img-top" :src="getImageUrl(webcam.webcamid)" alt="Webcam image" />
+            </div>
+            <div class="card-body">
+              <button class="link-button" @click="gotoMap(webcam.location.latitude, webcam.location.longitude)">
+                {{ webcam.title }}
+              </button>
+            </div>
           </div>
         </div>
         
         <!-- 検索結果のリスト表示 -->
-        <div v-for="searchedData in searchedDataArray" :key="searchedData.id">
-          <div>
-            <img :src="getImageUrl(searchedData.id)" alt="Searched data image" />
-          </div>
-          <div>
-            <button class="link-button" @click="gotoMap(searchedData.location.latitude, searchedData.location.longitude)">
-              {{ searchedData.description }}
-            </button>
+        <div class="col" v-for="searchedData in searchedDataArray" :key="searchedData.id">
+          <div class="card h-100">
+            <div>
+              <img class="card-img-top" :src="getImageUrl(searchedData.id)" alt="Searched data image" />
+            </div>
+            <div class="card-body">  
+              <button class="link-button" @click="gotoMap(searchedData.location.latitude, searchedData.location.longitude)">
+                {{ searchedData.description }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -77,4 +81,13 @@
     padding: 0;
     font: inherit;
   }
+
+  .card {
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
   </style>
