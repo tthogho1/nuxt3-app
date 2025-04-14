@@ -1,6 +1,7 @@
 import type {countryData} from "../../type/country";
 // add for unit test
 import { defineEventHandler, readBody } from 'h3';
+import { useRuntimeConfig } from '#imports';
 
 interface GraphQLResponse {
     data: {
@@ -13,8 +14,8 @@ interface GraphQLResponse {
 
 export const handler = defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
-    const token = config.public.mongodbKey;
-    const graphurl = config.mongodbAtlasGraphqlCountryUrl as string;
+    let token = config.public.mongodbKey;
+    let graphurl = config.mongodbAtlasGraphqlCountryUrl as string;
 
     let body ;
     try{
@@ -23,7 +24,6 @@ export const handler = defineEventHandler(async (event) => {
         console.error('Error in reading body:', e);
     }
 
-  //  const url = config.mongodbAtlasGraphqlUrl;
     const queryMsg = `query GetCountries {        
         countries(sortBy:COUNTRY_ASC) {
             code
@@ -32,6 +32,7 @@ export const handler = defineEventHandler(async (event) => {
         }`;
  
     try {
+
         const response = await fetch(graphurl, {
             method: 'POST',
             headers: {
