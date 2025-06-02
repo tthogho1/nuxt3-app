@@ -1,29 +1,28 @@
-type  webCamObj = {
-    webcamid:number;
-    status: string;
-    title:  string;
-    location : {
-        country: string;
-        latitude: number;
-        longitude: number;
-    }
-    player : {
-        day:string
-    } 
-    images : {
-            current : {
-            thumbnail:string;
-        }
+type webCamObj = {
+  webcamid: number;
+  status: string;
+  title: string;
+  location: {
+    country: string;
+    latitude: number;
+    longitude: number;
+  };
+  player: {
+    day: string;
+  };
+  images: {
+    current: {
+      thumbnail: string;
     };
+  };
 };
 
-type Bound ={
-    latitude_gte: number,
-    latitude_lt: number,
-    longitude_gte:number,
-    longitude_lt:number,
+type Bound = {
+  latitude_gte: number;
+  latitude_lt: number;
+  longitude_gte: number;
+  longitude_lt: number;
 };
-
 
 const webCamQuery = `{
     webcamid
@@ -41,51 +40,73 @@ const webCamQuery = `{
             thumbnail
         }    
     }
-}`
+}`;
+
+const webCamQueryV2 = `
+  {
+    webcam {
+      webcamid
+      status
+      title
+      player {
+        day
+      }
+      location {
+        country
+        latitude
+        longitude
+      }
+      images {
+        current {
+          thumbnail
+        }
+      }
+    }
+  }`;
 
 type accessTokenObj = {
-    accessToken: string;
-    getTime : number;
-}
+  accessToken: string;
+  getTime: number;
+};
 
 // from metal image index
-type  metalImageObj = {
-    id:string;
-    dist:  string;
-    imageUrl:string;
-    metadata : {
-        country: string; 
-        imgUrl:string;
-        latitude: number;
-        longitude: number;
-        title:string;
-    };
+type metalImageObj = {
+  id: string;
+  dist: string;
+  imageUrl: string;
+  metadata: {
+    country: string;
+    imgUrl: string;
+    latitude: number;
+    longitude: number;
+    title: string;
+  };
 };
 
 type webCamMetadata = {
-    id: string;
-    score: number;
-    created_at: string;
-    width: number;
-    height: number;
-    description: string;
-    urls: {
-        small: string;
-    };
-    links: {
-        html: string;
-    };
-    location:{
-        country:string,
-        latitude:number,
-        longitude:number
-    }
+  id: string;
+  score: number;
+  created_at: string;
+  width: number;
+  height: number;
+  description: string;
+  urls: {
+    small: string;
+  };
+  links: {
+    html: string;
+  };
+  location: {
+    country: string;
+    latitude: number;
+    longitude: number;
+  };
 };
 
 type location = {
-    latitude:number,
-    longitude:number
+  latitude: number;
+  longitude: number;
 };
 
-export type {webCamObj , Bound , accessTokenObj, metalImageObj, webCamMetadata ,location};
-export {webCamQuery};
+export type { webCamObj, Bound, accessTokenObj, metalImageObj, webCamMetadata, location };
+export { webCamQuery, webCamQueryV2 };
