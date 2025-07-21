@@ -27,5 +27,6 @@ export default defineEventHandler(async event => {
     throw new Error('Network response was not ok.');
   }
 
-  return await response.json();
+  const respJson = await response.json();
+  return respJson;
 });
